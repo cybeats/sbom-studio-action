@@ -1,0 +1,36 @@
+{
+  "name": "sbom-studio-action",
+  "version": "0.0.0",
+  "description": "This action provides the following functionality for GitHub Actions users:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js $llll"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "crypto-js": "^4.1.1",
+    "express": "^4.18.2",
+    "File": "^0.10.2",
+    "FileReader": "^0.10.2",
+    "minimist": "^1.2.7",
+    "node-fetch": "^3.3.1",
+    "nodemon": "^2.0.20",
+    "process": "^0.11.10",
+    "util": "^0.12.4",
+    "util.promisify": "^1.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cybeats/sbom-studio-action.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/cybeats/sbom-studio-action/issues"
+  },
+  "homepage": "https://github.com/cybeats/sbom-studio-action#readme"
+}

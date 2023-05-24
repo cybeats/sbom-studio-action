@@ -1,0 +1,54 @@
+name: 'Cybeats SBOM Studio'
+description: 'Cybeats SBOM Studio Action help cybeats customers to automate the SBOM import process into their SBOM Studio instance'
+author: 'Cybeats'
+branding:
+  icon: 'code'  
+  color: 'blue'
+inputs:
+  url:
+    required: true
+    description: 'Cybeats API URL'
+  filePath:
+    required: true
+    description: 'SBOM File Path'
+  secretAccessKey:
+    required: true
+    description: 'Cybeats Secret Key'
+  accessKey:
+    required: true
+    description: 'Cybeats Access Key'
+  subType:
+    required: true
+    description: 'SBOM Document Type'
+  manufactureName:
+    required: false
+    description: 'Manufacturer Name'
+  supplierName:
+    required: false
+    description: 'Supplier Name'
+  threshold:
+    required: false
+    description: 'Threshold for acceptable vulnerabilities(Low, Medium, High, Critical)'
+  sbomQuality:
+    required: false
+    description: 'Sbom Quality Percentage Acceptable'
+  pkgType:
+    required: false
+    description: 'SBOM Package Type (e.g. maven, npm, etc)'
+  sbomComponentName:
+    required: false
+    description: 'SBOM Component Name'
+  namespace:
+    required: false
+    description: 'SBOM Component Namespace'
+  sbomComponentVersion:
+    required: false
+    description: 'SBOM Component Version'
+outputs:
+  report:
+    description: 'Displays found vulnerabilities and their information'
+  
+
+runs:
+  main: 'dist/index.js'
+  using: 'node16'
