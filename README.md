@@ -139,14 +139,14 @@ jobs:
       #
       # manufactureName: my-example-manufacture-organization 
       # supplierName: my-example-supplier-organization       
-      - name: Import an SDPX TAG VALUE SBOM of a package 
+      - name: Import an SDPX SBOM of an application 
         uses: cybeats/sbom-studio-action@v1
         with:
           url:   ${{ env.API_URL }}  
-          filePath:  spdx-examples/example1/spdx2.2/example1.spdx  
+          filePath:  ./spdx-example-application.spdx  
           secretAccessKey:   ${{ secrets.SECRETKEY }}  
           accessKey:   ${{ secrets.ACCESSKEY }}  
-          subType:   package  
+          subType:   application  
           manufactureName: my-example-manufacture-organization  
           supplierName: my-example-supplier-organization
 
@@ -165,26 +165,26 @@ jobs:
       #                       this threshold will cause stop build
       #
       ############################################################################################
-      - name: Import an SPDX JSON SBOM of a package
+      - name: Import an SPDX SBOM of an application
         uses: cybeats/sbom-studio-action@v1
         with:
           url:   ${{ env.API_URL }}  
-          filePath:  ./spdx-examples/example7/spdx2.2/example7-third-party-modules.spdx.json  
+          filePath:  ./spdx-example-application.spdx  
           secretAccessKey:   ${{ secrets.SECRETKEY }}  
           accessKey:   ${{ secrets.ACCESSKEY }}  
-          subType:   package 
+          subType:   application 
           sbomQuality:   90                
 
       # threshold of value High will cause build to fail.
       # only Low and Medium vulnerabilities allowed in this case.
-      - name: Import an SPDX JSON SBOM of a package
+      - name: Import an SPDX SBOM of an application
         uses: cybeats/sbom-studio-action@v1
         with:
           url:   ${{ env.API_URL }}  
-          filePath:  ./spdx-examples/example7/spdx2.2/example7-third-party-modules.spdx.json  
+          filePath:  ./spdx-example-application.spdx  
           secretAccessKey:   ${{ secrets.SECRETKEY }}  
           accessKey:   ${{ secrets.ACCESSKEY }}  
-          subType:   package 
+          subType:   application 
           threshold:   High  
 
       ############################################################################################
@@ -236,7 +236,7 @@ jobs:
     threshold
     sbomQuality
     pkgType
-    sbomComponenentName
+    sbomComponentName
     namespace
     sbomComponentVersion
 

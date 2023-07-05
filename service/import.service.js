@@ -4,17 +4,17 @@ export async function addImport(
     body,
     secretAccessKey,
     accessKey,
-    url
+    url, proxyRunning
 ) {
-    return await doRequest(body, secretAccessKey, accessKey, url + "/v1/sboms/imports/add");
+    return await doRequest(body, secretAccessKey, accessKey, url + "/v1/sboms/imports/add", proxyRunning);
 };
 
 export async function getImportByKey(
     importId,
     secretAccessKey,
     accessKey,
-    url
+    url, proxyRunning
 ) {
     let body = {id: importId};
-    return await doRequest(body, secretAccessKey, accessKey, url + "/v1/sboms/imports/getbykey");
+    return await doRequest(body, secretAccessKey, accessKey, url + "/v1/sboms/imports/getbykey", proxyRunning);
 };
