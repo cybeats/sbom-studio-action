@@ -1,4 +1,3 @@
-import {signedUrlService} from './service/signed.url.service.js';
 import {generateJson} from "./service/json.generator.js";
 import {addImport, getImportByKey} from "./service/import.service.js";
 import {uploadFile} from "./service/file.upload.service.js";
@@ -19,6 +18,7 @@ const sbomComponentName = process.env.INPUT_SBOMCOMPONENTNAME.trim()
 const namespace = process.env.INPUT_NAMESPACE.trim()
 const sbomComponentVersion = process.env.INPUT_SBOMCOMPONENTVERSION.trim()
 const sbomQuality = process.env.INPUT_SBOMQUALITY.trim()
+const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
 
 let contentType;
 if (!url || !filePath || !secretAccessKey || !accessKey || !subType) {
@@ -34,7 +34,7 @@ if (!(optionalArgsPresent || optionalArgsAbsent)) {
         " and cannot be used individually.")
     process.exit(1)
 }
-var regex = /^https:\/\/[^ "]+$/;
+const regex = /^https:\/\/[^ "]+$/;
 if (!regex.test(url)) {
     console.log("Incorrect api url. Please adjust configuration.")
     process.exit(1)
@@ -87,13 +87,20 @@ if (jsonBody == "") {
     console.log("Wrong config.")
     process.exit(1)
 }
-
-// (async () => {
+let proxyRunning = true;
+if (noProxy) {
+    const apiUrl = new URL(url)
+    const proxyArray = noProxy.split(',');
+    for (let i = 0; i < proxyArray.length; i++) {
+        if (proxyArray[i] === apiUrl.hostname)
+            proxyRunning = false;
+    }
+}
 const importResult = await addImport(
     jsonBody,
     secretAccessKey,
     accessKey,
-    url
+    url, proxyRunning
 );
 let importId = importResult?.data?.importId;
 const signedUrl = importResult?.data?.signedUrl;
@@ -103,13 +110,8 @@ if (importId == undefined || signedUrl == undefined) {
 }
 let sbomQualityGrade = "";
 let sbomQualityPct = 0;
-// signedUrlService(
-//     signedUrl,
-//     filePath,
-//     secretAccessKey,
-//     accessKey
-// );
-if (!uploadFile(filePath, signedUrl, fileCheckSum)) {
+
+if (!uploadFile(filePath, signedUrl, fileCheckSum, proxyRunning)) {
     console.log("Upload Failed. Failing build.")
     process.exit(1);
 }
@@ -123,7 +125,7 @@ while (runLoop) {
         importId,
         secretAccessKey,
         accessKey,
-        url
+        url, proxyRunning
     );
     if (result == "") process.exit(1);
     const status = result?.data?.status;
@@ -168,7 +170,7 @@ setTimeout(function () {
 console.log(
     "Sbom Quality Grade: " +
     sbomQualityGrade +
-    " Grade Points : " +
+    ", Grade Points : " +
     sbomQualityPct
 );
 
@@ -178,14 +180,14 @@ if (threshold != undefined && threshold != '') {
         importId,
         secretAccessKey,
         accessKey,
-        url
+        url, proxyRunning
     );
     while (result == undefined) {
         result = await getDependencyVulnearabilities(
             importId,
             secretAccessKey,
             accessKey,
-            url
+            url, proxyRunning
         );
         console.log(result)
         await new Promise((r) => setTimeout(r, 15000));
@@ -251,4 +253,3 @@ if (sbomQuality != undefined) {
         process.exit(1)
     }
 }
-// })();
