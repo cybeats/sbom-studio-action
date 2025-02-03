@@ -1,7 +1,7 @@
 import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
 /******/ var __webpack_modules__ = ({
 
-/***/ 992:
+/***/ 760:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -30,8 +30,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.req = exports.json = exports.toBuffer = void 0;
-const http = __importStar(__nccwpck_require__(685));
-const https = __importStar(__nccwpck_require__(687));
+const http = __importStar(__nccwpck_require__(611));
+const https = __importStar(__nccwpck_require__(692));
 async function toBuffer(stream) {
     let length = 0;
     const chunks = [];
@@ -73,7 +73,7 @@ exports.req = req;
 
 /***/ }),
 
-/***/ 405:
+/***/ 845:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -105,8 +105,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Agent = void 0;
-const http = __importStar(__nccwpck_require__(685));
-__exportStar(__nccwpck_require__(992), exports);
+const http = __importStar(__nccwpck_require__(611));
+__exportStar(__nccwpck_require__(760), exports);
 const INTERNAL = Symbol('AgentBaseInternalState');
 class Agent extends http.Agent {
     constructor(opts) {
@@ -191,7 +191,7 @@ exports.Agent = Agent;
 
 /***/ }),
 
-/***/ 464:
+/***/ 516:
 /***/ ((module) => {
 
 
@@ -206,7 +206,7 @@ module.exports = (flag, argv) => {
 
 /***/ }),
 
-/***/ 308:
+/***/ 0:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -238,12 +238,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HttpsProxyAgent = void 0;
-const net = __importStar(__nccwpck_require__(808));
-const tls = __importStar(__nccwpck_require__(404));
-const assert_1 = __importDefault(__nccwpck_require__(491));
-const debug_1 = __importDefault(__nccwpck_require__(602));
-const agent_base_1 = __nccwpck_require__(405);
-const parse_proxy_response_1 = __nccwpck_require__(47);
+const net = __importStar(__nccwpck_require__(278));
+const tls = __importStar(__nccwpck_require__(756));
+const assert_1 = __importDefault(__nccwpck_require__(613));
+const debug_1 = __importDefault(__nccwpck_require__(583));
+const agent_base_1 = __nccwpck_require__(845);
+const parse_proxy_response_1 = __nccwpck_require__(375);
 const debug = (0, debug_1.default)('https-proxy-agent');
 /**
  * The `HttpsProxyAgent` implements an HTTP Agent subclass that connects to
@@ -382,7 +382,7 @@ function omit(obj, ...keys) {
 
 /***/ }),
 
-/***/ 47:
+/***/ 375:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
@@ -391,7 +391,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseProxyResponse = void 0;
-const debug_1 = __importDefault(__nccwpck_require__(602));
+const debug_1 = __importDefault(__nccwpck_require__(583));
 const debug = (0, debug_1.default)('https-proxy-agent:parse-proxy-response');
 function parseProxyResponse(socket) {
     return new Promise((resolve, reject) => {
@@ -434,7 +434,7 @@ function parseProxyResponse(socket) {
                 read();
                 return;
             }
-            const headerParts = buffered.toString('ascii').split('\r\n');
+            const headerParts = buffered.slice(0, endOfHeaders).toString('ascii').split('\r\n');
             const firstLine = headerParts.shift();
             if (!firstLine) {
                 socket.destroy();
@@ -486,7 +486,7 @@ exports.parseProxyResponse = parseProxyResponse;
 
 /***/ }),
 
-/***/ 431:
+/***/ 195:
 /***/ ((module, exports, __nccwpck_require__) => {
 
 /* eslint-env browser */
@@ -743,7 +743,7 @@ function localstorage() {
 	}
 }
 
-module.exports = __nccwpck_require__(595)(exports);
+module.exports = __nccwpck_require__(38)(exports);
 
 const {formatters} = module.exports;
 
@@ -762,7 +762,7 @@ formatters.j = function (v) {
 
 /***/ }),
 
-/***/ 595:
+/***/ 38:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 
@@ -778,7 +778,7 @@ function setup(env) {
 	createDebug.disable = disable;
 	createDebug.enable = enable;
 	createDebug.enabled = enabled;
-	createDebug.humanize = __nccwpck_require__(963);
+	createDebug.humanize = __nccwpck_require__(63);
 	createDebug.destroy = destroy;
 
 	Object.keys(env).forEach(key => {
@@ -1043,7 +1043,7 @@ module.exports = setup;
 
 /***/ }),
 
-/***/ 602:
+/***/ 583:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /**
@@ -1052,23 +1052,23 @@ module.exports = setup;
  */
 
 if (typeof process === 'undefined' || process.type === 'renderer' || process.browser === true || process.__nwjs) {
-	module.exports = __nccwpck_require__(431);
+	module.exports = __nccwpck_require__(195);
 } else {
-	module.exports = __nccwpck_require__(481);
+	module.exports = __nccwpck_require__(23);
 }
 
 
 /***/ }),
 
-/***/ 481:
+/***/ 23:
 /***/ ((module, exports, __nccwpck_require__) => {
 
 /**
  * Module dependencies.
  */
 
-const tty = __nccwpck_require__(224);
-const util = __nccwpck_require__(837);
+const tty = __nccwpck_require__(18);
+const util = __nccwpck_require__(404);
 
 /**
  * This is the Node.js implementation of `debug()`.
@@ -1094,7 +1094,7 @@ exports.colors = [6, 2, 3, 4, 5, 1];
 try {
 	// Optional dependency (as in, doesn't need to be installed, NOT like optionalDependencies in package.json)
 	// eslint-disable-next-line import/no-extraneous-dependencies
-	const supportsColor = __nccwpck_require__(490);
+	const supportsColor = __nccwpck_require__(575);
 
 	if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
 		exports.colors = [
@@ -1302,7 +1302,7 @@ function init(debug) {
 	}
 }
 
-module.exports = __nccwpck_require__(595)(exports);
+module.exports = __nccwpck_require__(38)(exports);
 
 const {formatters} = module.exports;
 
@@ -1330,7 +1330,7 @@ formatters.O = function (v) {
 
 /***/ }),
 
-/***/ 963:
+/***/ 63:
 /***/ ((module) => {
 
 /**
@@ -1499,14 +1499,14 @@ function plural(ms, msAbs, n, name) {
 
 /***/ }),
 
-/***/ 847:
+/***/ 373:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /*! node-domexception. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
 
 if (!globalThis.DOMException) {
   try {
-    const { MessageChannel } = __nccwpck_require__(267),
+    const { MessageChannel } = __nccwpck_require__(167),
     port = new MessageChannel().port1,
     ab = new ArrayBuffer()
     port.postMessage(ab, [ab, ab])
@@ -1522,12 +1522,12 @@ module.exports = globalThis.DOMException
 
 /***/ }),
 
-/***/ 490:
+/***/ 575:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 
-const os = __nccwpck_require__(37);
-const hasFlag = __nccwpck_require__(464);
+const os = __nccwpck_require__(857);
+const hasFlag = __nccwpck_require__(516);
 
 const env = process.env;
 
@@ -1660,7 +1660,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 429:
+/***/ 602:
 /***/ (function(__unused_webpack_module, exports) {
 
 /**
@@ -5879,98 +5879,98 @@ module.exports = {
 
 /***/ }),
 
-/***/ 491:
+/***/ 613:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("assert");
 
 /***/ }),
 
-/***/ 300:
+/***/ 181:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("buffer");
 
 /***/ }),
 
-/***/ 685:
+/***/ 611:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http");
 
 /***/ }),
 
-/***/ 687:
+/***/ 692:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("https");
 
 /***/ }),
 
-/***/ 808:
+/***/ 278:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
 
 /***/ }),
 
-/***/ 742:
+/***/ 708:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:process");
 
 /***/ }),
 
-/***/ 477:
+/***/ 830:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:stream/web");
 
 /***/ }),
 
-/***/ 37:
+/***/ 857:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
 
 /***/ }),
 
-/***/ 17:
+/***/ 928:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("path");
 
 /***/ }),
 
-/***/ 404:
+/***/ 756:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tls");
 
 /***/ }),
 
-/***/ 224:
+/***/ 18:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tty");
 
 /***/ }),
 
-/***/ 837:
+/***/ 404:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
 
 /***/ }),
 
-/***/ 267:
+/***/ 167:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("worker_threads");
 
 /***/ }),
 
-/***/ 861:
+/***/ 123:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /* c8 ignore start */
@@ -5982,11 +5982,11 @@ if (!globalThis.ReadableStream) {
   // and it's preferred over the polyfilled version. So we also
   // suppress the warning that gets emitted by NodeJS for using it.
   try {
-    const process = __nccwpck_require__(742)
+    const process = __nccwpck_require__(708)
     const { emitWarning } = process
     try {
       process.emitWarning = () => {}
-      Object.assign(globalThis, __nccwpck_require__(477))
+      Object.assign(globalThis, __nccwpck_require__(830))
       process.emitWarning = emitWarning
     } catch (error) {
       process.emitWarning = emitWarning
@@ -5994,14 +5994,14 @@ if (!globalThis.ReadableStream) {
     }
   } catch (error) {
     // fallback to polyfill implementation
-    Object.assign(globalThis, __nccwpck_require__(429))
+    Object.assign(globalThis, __nccwpck_require__(602))
   }
 }
 
 try {
   // Don't use node: prefix for this, require+node: is not supported until node v14.14
   // Only `import()` can use prefix in 12.20 and later
-  const { Blob } = __nccwpck_require__(300)
+  const { Blob } = __nccwpck_require__(181)
   if (Blob && !Blob.prototype.stream) {
     Blob.prototype.stream = function name (params) {
       let position = 0
@@ -6028,16 +6028,16 @@ try {
 
 /***/ }),
 
-/***/ 61:
+/***/ 254:
 /***/ ((__webpack_module__, __unused_webpack___webpack_exports__, __nccwpck_require__) => {
 
 __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony import */ var _service_json_generator_js__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(115);
-/* harmony import */ var _service_import_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(967);
-/* harmony import */ var _service_file_upload_service_js__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(574);
-/* harmony import */ var _service_dependency_vulnerabilities_service_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(849);
-/* harmony import */ var _service_sha_service_js__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(416);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(17);
+/* harmony import */ var _service_json_generator_js__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(945);
+/* harmony import */ var _service_import_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(824);
+/* harmony import */ var _service_file_upload_service_js__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(134);
+/* harmony import */ var _service_dependency_vulnerabilities_service_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(168);
+/* harmony import */ var _service_sha_service_js__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(84);
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(928);
 
 
 
@@ -6074,6 +6074,11 @@ if (!(optionalArgsPresent || optionalArgsAbsent)) {
         " and cannot be used individually.")
     process.exit(1)
 }
+
+if (url.endsWith('/')){
+    url = url.substring(0, url.length -1);
+}
+
 const regex = /^https:\/\/[^ "]+$/;
 if (!regex.test(url)) {
     console.log("Incorrect api url. Please adjust configuration.")
@@ -6096,7 +6101,7 @@ if (sbomQuality) {
     }
 }
 try {
-    if (!(0,_service_sha_service_js__WEBPACK_IMPORTED_MODULE_3__/* .checkFile */ .Oo)(filePath))
+    if (!(0,_service_sha_service_js__WEBPACK_IMPORTED_MODULE_3__/* .checkFile */ .vH)(filePath))
         process.exit(1)
 } catch (err) {
     console.log("Incorrect filePath. Please check if file is missing.")
@@ -6110,8 +6115,8 @@ if (extension == "")
 else contentType = "application/" + extension.replace(".", "");
 
 fileName = path__WEBPACK_IMPORTED_MODULE_4__.basename(filePath);
-const fileCheckSum = (0,_service_sha_service_js__WEBPACK_IMPORTED_MODULE_3__/* .fileCheckSumCalculate */ .mR)(filePath);
-const jsonBody = (0,_service_json_generator_js__WEBPACK_IMPORTED_MODULE_5__/* .generateJson */ .U)(
+const fileCheckSum = (0,_service_sha_service_js__WEBPACK_IMPORTED_MODULE_3__/* .fileCheckSumCalculate */ .cd)(filePath);
+const jsonBody = (0,_service_json_generator_js__WEBPACK_IMPORTED_MODULE_5__/* .generateJson */ .m)(
     fileCheckSum,
     fileName,
     contentType,
@@ -6136,7 +6141,7 @@ if (noProxy) {
             proxyRunning = false;
     }
 }
-const importResult = await (0,_service_import_service_js__WEBPACK_IMPORTED_MODULE_0__/* .addImport */ .r)(
+const importResult = await (0,_service_import_service_js__WEBPACK_IMPORTED_MODULE_0__/* .addImport */ .X)(
     jsonBody,
     secretAccessKey,
     accessKey,
@@ -6151,7 +6156,7 @@ if (importId == undefined || signedUrl == undefined) {
 let sbomQualityGrade = "";
 let sbomQualityPct = 0;
 
-if (!(0,_service_file_upload_service_js__WEBPACK_IMPORTED_MODULE_1__/* .uploadFile */ .c)(filePath, signedUrl, fileCheckSum, proxyRunning)) {
+if (!(0,_service_file_upload_service_js__WEBPACK_IMPORTED_MODULE_1__/* .uploadFile */ .Q)(filePath, signedUrl, fileCheckSum, proxyRunning)) {
     console.log("Upload Failed. Failing build.")
     process.exit(1);
 }
@@ -6161,7 +6166,7 @@ let normalizedAt = true;
 let analyzedAt = true;
 let importedAt = true;
 while (runLoop) {
-    let result = await (0,_service_import_service_js__WEBPACK_IMPORTED_MODULE_0__/* .getImportByKey */ .B)(
+    let result = await (0,_service_import_service_js__WEBPACK_IMPORTED_MODULE_0__/* .getImportByKey */ .E)(
         importId,
         secretAccessKey,
         accessKey,
@@ -6216,14 +6221,14 @@ console.log(
 
 let failBuild = false;
 if (threshold != undefined && threshold != '') {
-    let result = await (0,_service_dependency_vulnerabilities_service_js__WEBPACK_IMPORTED_MODULE_2__/* .getDependencyVulnearabilities */ .A)(
+    let result = await (0,_service_dependency_vulnerabilities_service_js__WEBPACK_IMPORTED_MODULE_2__/* .getDependencyVulnearabilities */ .j)(
         importId,
         secretAccessKey,
         accessKey,
         url, proxyRunning
     );
     while (result == undefined) {
-        result = await (0,_service_dependency_vulnerabilities_service_js__WEBPACK_IMPORTED_MODULE_2__/* .getDependencyVulnearabilities */ .A)(
+        result = await (0,_service_dependency_vulnerabilities_service_js__WEBPACK_IMPORTED_MODULE_2__/* .getDependencyVulnearabilities */ .j)(
             importId,
             secretAccessKey,
             accessKey,
@@ -6298,17 +6303,17 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 879:
+/***/ 342:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* unused harmony export File */
-/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(410);
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(146);
 
 
-const _File = class File extends _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z {
+const _File = class File extends _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A {
   #lastModified = 0
   #name = ''
 
@@ -6347,7 +6352,7 @@ const _File = class File extends _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["defa
   }
 
   static [Symbol.hasInstance] (object) {
-    return !!object && object instanceof _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z &&
+    return !!object && object instanceof _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A &&
       /^(File)$/.test(object[Symbol.toStringTag])
   }
 }
@@ -6359,13 +6364,13 @@ const File = _File
 
 /***/ }),
 
-/***/ 812:
+/***/ 248:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 
 // EXPORTS
 __nccwpck_require__.d(__webpack_exports__, {
-  "$B": () => (/* reexport */ file/* default */.Z)
+  ZH: () => (/* reexport */ file/* default */.A)
 });
 
 // UNUSED EXPORTS: Blob, blobFrom, blobFromSync, default, fileFrom, fileFromSync
@@ -6375,11 +6380,11 @@ const external_node_fs_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import
 ;// CONCATENATED MODULE: external "node:path"
 const external_node_path_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:path");
 // EXTERNAL MODULE: ./node_modules/node-domexception/index.js
-var node_domexception = __nccwpck_require__(847);
+var node_domexception = __nccwpck_require__(373);
 // EXTERNAL MODULE: ./node_modules/fetch-blob/file.js
-var file = __nccwpck_require__(879);
+var file = __nccwpck_require__(342);
 // EXTERNAL MODULE: ./node_modules/fetch-blob/index.js
-var fetch_blob = __nccwpck_require__(410);
+var fetch_blob = __nccwpck_require__(146);
 ;// CONCATENATED MODULE: ./node_modules/fetch-blob/from.js
 
 
@@ -6466,9 +6471,9 @@ class BlobDataItem {
   async * stream () {
     const { mtimeMs } = await stat(this.#path)
     if (mtimeMs > this.lastModified) {
-      throw new DOMException('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError')
+      throw new node_domexception('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError')
     }
-    yield * createReadStream(this.#path, {
+    yield * (0,external_node_fs_namespaceObject.createReadStream)(this.#path, {
       start: this.#start,
       end: this.#start + this.size - 1
     })
@@ -6485,14 +6490,14 @@ class BlobDataItem {
 
 /***/ }),
 
-/***/ 410:
+/***/ 146:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* unused harmony export Blob */
-/* harmony import */ var _streams_cjs__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(861);
+/* harmony import */ var _streams_cjs__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(123);
 /*! fetch-blob. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
 
 // TODO (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
@@ -6747,16 +6752,16 @@ const Blob = _Blob
 
 /***/ }),
 
-/***/ 948:
+/***/ 169:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "Ct": () => (/* binding */ FormData),
-/* harmony export */   "au": () => (/* binding */ formDataToBlob)
+/* harmony export */   $n: () => (/* binding */ formDataToBlob),
+/* harmony export */   fS: () => (/* binding */ FormData)
 /* harmony export */ });
 /* unused harmony export File */
-/* harmony import */ var fetch_blob__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(410);
-/* harmony import */ var fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(879);
+/* harmony import */ var fetch_blob__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(146);
+/* harmony import */ var fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(342);
 /*! formdata-polyfill. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
 
 
@@ -6765,7 +6770,7 @@ const Blob = _Blob
 var {toStringTag:t,iterator:i,hasInstance:h}=Symbol,
 r=Math.random,
 m='append,set,get,getAll,delete,keys,values,entries,forEach,constructor'.split(','),
-f=(a,b,c)=>(a+='',/^(Blob|File)$/.test(b && b[t])?[(c=c!==void 0?c+'':b[t]=='File'?b.name:'blob',a),b.name!==c||b[t]=='blob'?new fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Z([b],c,b):b]:[a,b+'']),
+f=(a,b,c)=>(a+='',/^(Blob|File)$/.test(b && b[t])?[(c=c!==void 0?c+'':b[t]=='File'?b.name:'blob',a),b.name!==c||b[t]=='blob'?new fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A([b],c,b):b]:[a,b+'']),
 e=(c,f)=>(f?c:c.replace(/\r?\n|\r/g,'\r\n')).replace(/\n/g,'%0A').replace(/\r/g,'%0D').replace(/"/g,'%22'),
 x=(n, a, e)=>{if(a.length<e){throw new TypeError(`Failed to execute '${n}' on 'FormData': ${e} arguments required, but only ${a.length} present.`)}}
 
@@ -6790,7 +6795,7 @@ set(...a){x('set',arguments,2);var b=[],c=!0;a=f(...a);this.#d.forEach(d=>{d[0]=
 *values(){for(var[,a]of this)yield a}}
 
 /** @param {FormData} F */
-function formDataToBlob (F,B=fetch_blob__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z){
+function formDataToBlob (F,B=fetch_blob__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A){
 var b=`${r()}${r()}`.replace(/\./g, '').slice(-28).padStart(32, '-'),c=[],p=`--${b}\r\nContent-Disposition: form-data; name="`
 F.forEach((v,n)=>typeof v=='string'
 ?c.push(p+e(n)+`"\r\n\r\n${v.replace(/\r(?!\n)|(?<!\r)\n/g, '\r\n')}\r\n`)
@@ -6801,13 +6806,13 @@ return new B(c,{type:"multipart/form-data; boundary="+b})}
 
 /***/ }),
 
-/***/ 79:
+/***/ 874:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 
 // EXPORTS
 __nccwpck_require__.d(__webpack_exports__, {
-  "ZP": () => (/* binding */ fetch)
+  Ay: () => (/* binding */ fetch)
 });
 
 // UNUSED EXPORTS: AbortError, Blob, FetchError, File, FormData, Headers, Request, Response, blobFrom, blobFromSync, fileFrom, fileFromSync, isRedirect
@@ -6879,9 +6884,9 @@ function dataUriToBuffer(uri) {
 ;// CONCATENATED MODULE: external "node:util"
 const external_node_util_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:util");
 // EXTERNAL MODULE: ./node_modules/fetch-blob/index.js
-var fetch_blob = __nccwpck_require__(410);
+var fetch_blob = __nccwpck_require__(146);
 // EXTERNAL MODULE: ./node_modules/formdata-polyfill/esm.min.js
-var esm_min = __nccwpck_require__(948);
+var esm_min = __nccwpck_require__(169);
 ;// CONCATENATED MODULE: ./node_modules/node-fetch/src/errors/base.js
 class FetchBaseError extends Error {
 	constructor(message, type) {
@@ -7073,9 +7078,9 @@ class Body {
 			body = external_node_buffer_namespaceObject.Buffer.from(body.buffer, body.byteOffset, body.byteLength);
 		} else if (body instanceof external_node_stream_namespaceObject) {
 			// Body is stream
-		} else if (body instanceof esm_min/* FormData */.Ct) {
+		} else if (body instanceof esm_min/* FormData */.fS) {
 			// Body is FormData
-			body = (0,esm_min/* formDataToBlob */.au)(body);
+			body = (0,esm_min/* formDataToBlob */.$n)(body);
 			boundary = body.type.split('=')[1];
 		} else {
 			// None of the above
@@ -7132,7 +7137,7 @@ class Body {
 		const ct = this.headers.get('content-type');
 
 		if (ct.startsWith('application/x-www-form-urlencoded')) {
-			const formData = new esm_min/* FormData */.Ct();
+			const formData = new esm_min/* FormData */.fS();
 			const parameters = new URLSearchParams(await this.text());
 
 			for (const [name, value] of parameters) {
@@ -7142,7 +7147,7 @@ class Body {
 			return formData;
 		}
 
-		const {toFormData} = await __nccwpck_require__.e(/* import() */ 711).then(__nccwpck_require__.bind(__nccwpck_require__, 711));
+		const {toFormData} = await __nccwpck_require__.e(/* import() */ 866).then(__nccwpck_require__.bind(__nccwpck_require__, 485));
 		return toFormData(this.body, ct);
 	}
 
@@ -7155,7 +7160,7 @@ class Body {
 		const ct = (this.headers && this.headers.get('content-type')) || (this[INTERNALS].body && this[INTERNALS].body.type) || '';
 		const buf = await this.arrayBuffer();
 
-		return new fetch_blob/* default */.Z([buf], {
+		return new fetch_blob/* default */.A([buf], {
 			type: ct
 		});
 	}
@@ -7346,7 +7351,7 @@ const extractContentType = (body, request) => {
 		return null;
 	}
 
-	if (body instanceof esm_min/* FormData */.Ct) {
+	if (body instanceof esm_min/* FormData */.fS) {
 		return `multipart/form-data; boundary=${request[INTERNALS].boundary}`;
 	}
 
@@ -8507,10 +8512,6 @@ const getNodeRequestOptions = request => {
 		agent = agent(parsedURL);
 	}
 
-	if (!headers.has('Connection') && !agent) {
-		headers.set('Connection', 'close');
-	}
-
 	// HTTP-network fetch step 4.2
 	// chunked encoding is handled by Node.js
 
@@ -8548,7 +8549,7 @@ class AbortError extends FetchBaseError {
 }
 
 // EXTERNAL MODULE: ./node_modules/fetch-blob/from.js + 2 modules
-var from = __nccwpck_require__(812);
+var from = __nccwpck_require__(248);
 ;// CONCATENATED MODULE: ./node_modules/node-fetch/src/index.js
 /**
  * Index.js
@@ -8964,13 +8965,13 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 
 /***/ }),
 
-/***/ 849:
+/***/ 168:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "A": () => (/* binding */ getDependencyVulnearabilities)
+/* harmony export */   j: () => (/* binding */ getDependencyVulnearabilities)
 /* harmony export */ });
-/* harmony import */ var _request_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(273);
+/* harmony import */ var _request_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(866);
 
 
 async function getDependencyVulnearabilities(
@@ -8980,21 +8981,21 @@ async function getDependencyVulnearabilities(
     url, proxyRunning
 ) {
     const body = {importId: importId};
-    return await (0,_request_service_js__WEBPACK_IMPORTED_MODULE_0__/* .doRequest */ .N)(body, secretAccessKey, accessKey, url + "/v1/sboms/componentcatalog/software", proxyRunning);
+    return await (0,_request_service_js__WEBPACK_IMPORTED_MODULE_0__/* .doRequest */ .p)(body, secretAccessKey, accessKey, url + "/v1/sboms/componentcatalog/software", proxyRunning);
 };
 
 /***/ }),
 
-/***/ 574:
+/***/ 134:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "c": () => (/* binding */ uploadFile)
+/* harmony export */   Q: () => (/* binding */ uploadFile)
 /* harmony export */ });
-/* harmony import */ var _sha_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(416);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(17);
-/* harmony import */ var node_fetch__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(79);
-/* harmony import */ var https_proxy_agent__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(308);
+/* harmony import */ var _sha_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(84);
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(928);
+/* harmony import */ var node_fetch__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(874);
+/* harmony import */ var https_proxy_agent__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(0);
 
 
 
@@ -9007,9 +9008,9 @@ async function uploadFile(filePath, url, fileCheckSum, proxyRunning) {
     let contentType;
     if (extension == "") contentType = "application/octet-stream";
     else contentType = "application/" + extension;
-    const fileContent = await (0,_sha_service_js__WEBPACK_IMPORTED_MODULE_0__/* .readFileContent */ .O2)(filePath);
+    const fileContent = await (0,_sha_service_js__WEBPACK_IMPORTED_MODULE_0__/* .readFileContent */ .AJ)(filePath);
     if (!proxyRunning || !proxyServer)
-        (0,node_fetch__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .ZP)(url,
+        (0,node_fetch__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .Ay)(url,
             {
                 method: "PUT",
                 headers: {
@@ -9031,7 +9032,7 @@ async function uploadFile(filePath, url, fileCheckSum, proxyRunning) {
             });
     else {
         const proxyAgent = new https_proxy_agent__WEBPACK_IMPORTED_MODULE_2__.HttpsProxyAgent(proxyServer.trim());
-        (0,node_fetch__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .ZP)(url,
+        (0,node_fetch__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .Ay)(url,
             {
                 agent: proxyAgent,
                 method: "PUT",
@@ -9058,14 +9059,14 @@ async function uploadFile(filePath, url, fileCheckSum, proxyRunning) {
 
 /***/ }),
 
-/***/ 967:
+/***/ 824:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "B": () => (/* binding */ getImportByKey),
-/* harmony export */   "r": () => (/* binding */ addImport)
+/* harmony export */   E: () => (/* binding */ getImportByKey),
+/* harmony export */   X: () => (/* binding */ addImport)
 /* harmony export */ });
-/* harmony import */ var _request_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(273);
+/* harmony import */ var _request_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(866);
 
 
 async function addImport(
@@ -9074,7 +9075,7 @@ async function addImport(
     accessKey,
     url, proxyRunning
 ) {
-    return await (0,_request_service_js__WEBPACK_IMPORTED_MODULE_0__/* .doRequest */ .N)(body, secretAccessKey, accessKey, url + "/v1/sboms/imports/add", proxyRunning);
+    return await (0,_request_service_js__WEBPACK_IMPORTED_MODULE_0__/* .doRequest */ .p)(body, secretAccessKey, accessKey, url + "/v1/sboms/imports/add", proxyRunning);
 };
 
 async function getImportByKey(
@@ -9084,16 +9085,16 @@ async function getImportByKey(
     url, proxyRunning
 ) {
     let body = {id: importId};
-    return await (0,_request_service_js__WEBPACK_IMPORTED_MODULE_0__/* .doRequest */ .N)(body, secretAccessKey, accessKey, url + "/v1/sboms/imports/getbykey", proxyRunning);
+    return await (0,_request_service_js__WEBPACK_IMPORTED_MODULE_0__/* .doRequest */ .p)(body, secretAccessKey, accessKey, url + "/v1/sboms/imports/getbykey", proxyRunning);
 };
 
 /***/ }),
 
-/***/ 115:
+/***/ 945:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "U": () => (/* binding */ generateJson)
+/* harmony export */   m: () => (/* binding */ generateJson)
 /* harmony export */ });
 function generateJson(
     fwCheckSum,
@@ -9143,28 +9144,28 @@ function isDefined(inputVar) {
 
 /***/ }),
 
-/***/ 273:
+/***/ 866:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "N": () => (/* binding */ doRequest)
+/* harmony export */   p: () => (/* binding */ doRequest)
 /* harmony export */ });
-/* harmony import */ var _sha_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(416);
-/* harmony import */ var node_fetch__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(79);
-/* harmony import */ var https_proxy_agent__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(308);
+/* harmony import */ var _sha_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(84);
+/* harmony import */ var node_fetch__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(874);
+/* harmony import */ var https_proxy_agent__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(0);
 
 
 
 
 async function doRequest(body, secretAccessKey, accessKey, url, proxyRunning) {
     let timestamp = Math.floor(Date.now() / 1000);
-    const vsig = (0,_sha_service_js__WEBPACK_IMPORTED_MODULE_0__/* .calculate */ .Kf)(timestamp, body, secretAccessKey);
+    const vsig = (0,_sha_service_js__WEBPACK_IMPORTED_MODULE_0__/* .calculate */ .Di)(timestamp, body, secretAccessKey);
     const proxyServer = !process.env.HTTPS_PROXY? process.env.https_proxy : process.env.HTTPS_PROXY;
     let i = 0;
     let req;
 
     async function getResponse() {
-        return await (0,node_fetch__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .ZP)(url, {
+        return await (0,node_fetch__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Ay)(url, {
             method: "POST",
             headers: {
                 "x-fwup-access-key-id": accessKey,
@@ -9193,7 +9194,7 @@ async function doRequest(body, secretAccessKey, accessKey, url, proxyRunning) {
 
     async function getProxyResponse() {
         const proxyAgent = new https_proxy_agent__WEBPACK_IMPORTED_MODULE_1__.HttpsProxyAgent(proxyServer.trim());
-        return await (0,node_fetch__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .ZP)(url, {
+        return await (0,node_fetch__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Ay)(url, {
             agent: proxyAgent,
             method: "POST",
             headers: {
@@ -9261,16 +9262,16 @@ function isResponseJSON(response) {
 
 /***/ }),
 
-/***/ 416:
+/***/ 84:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 
 // EXPORTS
 __nccwpck_require__.d(__webpack_exports__, {
-  "Kf": () => (/* binding */ calculate),
-  "Oo": () => (/* binding */ checkFile),
-  "mR": () => (/* binding */ fileCheckSumCalculate),
-  "O2": () => (/* binding */ readFileContent)
+  Di: () => (/* binding */ calculate),
+  vH: () => (/* binding */ checkFile),
+  cd: () => (/* binding */ fileCheckSumCalculate),
+  AJ: () => (/* binding */ readFileContent)
 });
 
 ;// CONCATENATED MODULE: external "crypto"
@@ -9363,7 +9364,7 @@ function checkFile(fileUrl) {
 /******/ 	var webpackExports = typeof Symbol === "function" ? Symbol("webpack exports") : "__webpack_exports__";
 /******/ 	var webpackError = typeof Symbol === "function" ? Symbol("webpack error") : "__webpack_error__";
 /******/ 	var resolveQueue = (queue) => {
-/******/ 		if(queue && !queue.d) {
+/******/ 		if(queue && queue.d < 1) {
 /******/ 			queue.d = 1;
 /******/ 			queue.forEach((fn) => (fn.r--));
 /******/ 			queue.forEach((fn) => (fn.r-- ? fn.r++ : fn()));
@@ -9394,7 +9395,7 @@ function checkFile(fileUrl) {
 /******/ 	}));
 /******/ 	__nccwpck_require__.a = (module, body, hasAwait) => {
 /******/ 		var queue;
-/******/ 		hasAwait && ((queue = []).d = 1);
+/******/ 		hasAwait && ((queue = []).d = -1);
 /******/ 		var depQueues = new Set();
 /******/ 		var exports = module.exports;
 /******/ 		var currentDeps;
@@ -9422,7 +9423,7 @@ function checkFile(fileUrl) {
 /******/ 			});
 /******/ 			return fn.r ? promise : getResult();
 /******/ 		}, (err) => ((err ? reject(promise[webpackError] = err) : outerResolve(exports)), resolveQueue(queue)));
-/******/ 		queue && (queue.d = 0);
+/******/ 		queue && queue.d < 0 && (queue.d = 0);
 /******/ 	};
 /******/ })();
 /******/ 
@@ -9465,17 +9466,6 @@ function checkFile(fileUrl) {
 /******/ 	__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ })();
 /******/ 
-/******/ /* webpack/runtime/make namespace object */
-/******/ (() => {
-/******/ 	// define __esModule on exports
-/******/ 	__nccwpck_require__.r = (exports) => {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/ })();
-/******/ 
 /******/ /* webpack/runtime/compat */
 /******/ 
 /******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
@@ -9486,9 +9476,9 @@ function checkFile(fileUrl) {
 /******/ 	
 /******/ 	// object to store loaded and loading chunks
 /******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 	// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 	// [resolve, Promise] = chunk loading, 0 = chunk loaded
 /******/ 	var installedChunks = {
-/******/ 		179: 0
+/******/ 		792: 0
 /******/ 	};
 /******/ 	
 /******/ 	var installChunk = (data) => {
@@ -9529,10 +9519,14 @@ function checkFile(fileUrl) {
 /******/ 						});
 /******/ 						var promise = Promise.race([promise, new Promise((resolve) => (installedChunkData = installedChunks[chunkId] = [resolve]))])
 /******/ 						promises.push(installedChunkData[1] = promise);
-/******/ 					} else installedChunks[chunkId] = 0;
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 	};
+/******/ 	
+/******/ 	// no prefetching
+/******/ 	
+/******/ 	// no preloaded
 /******/ 	
 /******/ 	// no external install chunk
 /******/ 	
@@ -9544,6 +9538,6 @@ function checkFile(fileUrl) {
 /******/ // startup
 /******/ // Load entry module and return exports
 /******/ // This entry module used 'module' so it can't be inlined
-/******/ var __webpack_exports__ = __nccwpck_require__(61);
+/******/ var __webpack_exports__ = __nccwpck_require__(254);
 /******/ __webpack_exports__ = await __webpack_exports__;
 /******/ 
