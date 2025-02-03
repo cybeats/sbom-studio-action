@@ -34,6 +34,11 @@ if (!(optionalArgsPresent || optionalArgsAbsent)) {
         " and cannot be used individually.")
     process.exit(1)
 }
+
+if (url.endsWith('/')){
+    url = url.substring(0, url.length -1);
+}
+
 const regex = /^https:\/\/[^ "]+$/;
 if (!regex.test(url)) {
     console.log("Incorrect api url. Please adjust configuration.")
