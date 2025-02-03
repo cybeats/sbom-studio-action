@@ -5,7 +5,7 @@ import {getDependencyVulnearabilities} from "./service/dependency.vulnerabilitie
 import {checkFile, fileCheckSumCalculate} from "./service/sha.service.js";
 import path from "path";
 
-const url = process.env.INPUT_URL.trim()
+let url = process.env.INPUT_URL.trim()
 const filePath = process.env.INPUT_FILEPATH.trim()
 const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
 const accessKey = process.env.INPUT_ACCESSKEY.trim()
