@@ -1,6 +1,6 @@
 {
   "name": "sbom-studio-action",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "description": "This action provides the following functionality for GitHub Actions users:",
   "main": "index.js",
   "scripts": {
