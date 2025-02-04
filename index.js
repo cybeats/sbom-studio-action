@@ -5,7 +5,7 @@ import {getDependencyVulnearabilities} from "./service/dependency.vulnerabilitie
 import {checkFile, fileCheckSumCalculate} from "./service/sha.service.js";
 import path from "path";
 
-const url = process.env.INPUT_URL.trim()
+let url = process.env.INPUT_URL.trim()
 const filePath = process.env.INPUT_FILEPATH.trim()
 const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
 const accessKey = process.env.INPUT_ACCESSKEY.trim()
@@ -34,6 +34,11 @@ if (!(optionalArgsPresent || optionalArgsAbsent)) {
         " and cannot be used individually.")
     process.exit(1)
 }
+
+if (url.endsWith('/')){
+    url = url.substring(0, url.length -1);
+}
+
 const regex = /^https:\/\/[^ "]+$/;
 if (!regex.test(url)) {
     console.log("Incorrect api url. Please adjust configuration.")
