@@ -9518,7 +9518,7 @@ let url = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput(url);
 // const sbomQuality = core.getInput(sbomQuality);
 
 
-url = process.env.INPUT_URL.trim()
+// url = process.env.INPUT_URL.trim()
 const filePath = process.env.INPUT_FILEPATH.trim()
 const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
 const accessKey = process.env.INPUT_ACCESSKEY.trim()
