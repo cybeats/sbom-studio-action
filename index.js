@@ -4,6 +4,8 @@ import {uploadFile} from "./service/file.upload.service.js";
 import {getDependencyVulnearabilities} from "./service/dependency.vulnerabilities.service.js";
 import {checkFile, fileCheckSumCalculate} from "./service/sha.service.js";
 import path from "path";
+import * as core from '@actions/core';
+
 // const core = require('@actions/core');
 // const github = require('@actions/github');
 
