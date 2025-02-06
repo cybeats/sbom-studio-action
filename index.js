@@ -9,34 +9,34 @@ import * as core from '@actions/core';
 // const core = require('@actions/core');
 // const github = require('@actions/github');
 
-let url = core.getInput(url);
-const filePath = core.getInput(filePath);
-const secretAccessKey = core.getInput(secretAccessKey);
-const accessKey = core.getInput(accessKey);
-const manufactureName = core.getInput(manufactureName);
-const supplierName = core.getInput(supplierName);
-const subType = core.getInput(subType);
-const threshold = core.getInput(threshold);
-const pkgType = core.getInput(pkgType);
-const sbomComponentName = core.getInput(sbomComponentName);
-const namespace = core.getInput(namespace);
-const sbomComponentVersion = core.getInput(sbomComponentVersion);
-const sbomQuality = core.getInput(sbomQuality);
+// let url = core.getInput(url);
+// const filePath = core.getInput(filePath);
+// const secretAccessKey = core.getInput(secretAccessKey);
+// const accessKey = core.getInput(accessKey);
+// const manufactureName = core.getInput(manufactureName);
+// const supplierName = core.getInput(supplierName);
+// const subType = core.getInput(subType);
+// const threshold = core.getInput(threshold);
+// const pkgType = core.getInput(pkgType);
+// const sbomComponentName = core.getInput(sbomComponentName);
+// const namespace = core.getInput(namespace);
+// const sbomComponentVersion = core.getInput(sbomComponentVersion);
+// const sbomQuality = core.getInput(sbomQuality);
 
 
-// let url = process.env.INPUT_URL.trim()
-// const filePath = process.env.INPUT_FILEPATH.trim()
-// const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
-// const accessKey = process.env.INPUT_ACCESSKEY.trim()
-// const manufactureName = process.env.INPUT_MANUFACTURENAME.trim()
-// const supplierName = process.env.INPUT_SUPPLIERNAME.trim()
-// const subType = process.env.INPUT_SUBTYPE.trim()
-// const threshold = process.env.INPUT_THRESHOLD.trim()
-// const pkgType = process.env.INPUT_PKGTYPE.trim()
-// const sbomComponentName = process.env.INPUT_SBOMCOMPONENTNAME.trim()
-// const namespace = process.env.INPUT_NAMESPACE.trim()
-// const sbomComponentVersion = process.env.INPUT_SBOMCOMPONENTVERSION.trim()
-// const sbomQuality = process.env.INPUT_SBOMQUALITY.trim()
+let url = process.env.INPUT_URL.trim()
+const filePath = process.env.INPUT_FILEPATH.trim()
+const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
+const accessKey = process.env.INPUT_ACCESSKEY.trim()
+const manufactureName = process.env.INPUT_MANUFACTURENAME.trim()
+const supplierName = process.env.INPUT_SUPPLIERNAME.trim()
+const subType = process.env.INPUT_SUBTYPE.trim()
+const threshold = process.env.INPUT_THRESHOLD.trim()
+const pkgType = process.env.INPUT_PKGTYPE.trim()
+const sbomComponentName = process.env.INPUT_SBOMCOMPONENTNAME.trim()
+const namespace = process.env.INPUT_NAMESPACE.trim()
+const sbomComponentVersion = process.env.INPUT_SBOMCOMPONENTVERSION.trim()
+const sbomQuality = process.env.INPUT_SBOMQUALITY.trim()
 
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
 
