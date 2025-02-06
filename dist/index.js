@@ -9503,7 +9503,7 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
 // const core = require('@actions/core');
 // const github = require('@actions/github');
 
-// let url = core.getInput(url);
+let url = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput(url);
 // const filePath = core.getInput(filePath);
 // const secretAccessKey = core.getInput(secretAccessKey);
 // const accessKey = core.getInput(accessKey);
@@ -9518,7 +9518,7 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
 // const sbomQuality = core.getInput(sbomQuality);
 
 
-let url = process.env.INPUT_URL.trim()
+url = process.env.INPUT_URL.trim()
 const filePath = process.env.INPUT_FILEPATH.trim()
 const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
 const accessKey = process.env.INPUT_ACCESSKEY.trim()
