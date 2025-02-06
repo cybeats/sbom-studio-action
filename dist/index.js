@@ -9504,33 +9504,33 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
 // const github = require('@actions/github');
 
 let url = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('url');
-// const filePath = core.getInput(filePath);
-// const secretAccessKey = core.getInput(secretAccessKey);
-// const accessKey = core.getInput(accessKey);
-// const manufactureName = core.getInput(manufactureName);
-// const supplierName = core.getInput(supplierName);
-// const subType = core.getInput(subType);
-// const threshold = core.getInput(threshold);
-// const pkgType = core.getInput(pkgType);
-// const sbomComponentName = core.getInput(sbomComponentName);
-// const namespace = core.getInput(namespace);
-// const sbomComponentVersion = core.getInput(sbomComponentVersion);
-// const sbomQuality = core.getInput(sbomQuality);
+const filePath = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('filePath');
+const secretAccessKey = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('secretAccessKey');
+const accessKey = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('accessKey');
+const manufactureName = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('manufactureName');
+const supplierName = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('supplierName');
+const subType = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('subType');
+const threshold = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('threshold');
+const pkgType = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('pkgType');
+const sbomComponentName = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('sbomComponentName');
+const namespace = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('namespace');
+const sbomComponentVersion = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('sbomComponentVersion');
+const sbomQuality = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('sbomQuality');
 
 
 // url = process.env.INPUT_URL.trim()
-const filePath = process.env.INPUT_FILEPATH.trim()
-const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
-const accessKey = process.env.INPUT_ACCESSKEY.trim()
-const manufactureName = process.env.INPUT_MANUFACTURENAME.trim()
-const supplierName = process.env.INPUT_SUPPLIERNAME.trim()
-const subType = process.env.INPUT_SUBTYPE.trim()
-const threshold = process.env.INPUT_THRESHOLD.trim()
-const pkgType = process.env.INPUT_PKGTYPE.trim()
-const sbomComponentName = process.env.INPUT_SBOMCOMPONENTNAME.trim()
-const namespace = process.env.INPUT_NAMESPACE.trim()
-const sbomComponentVersion = process.env.INPUT_SBOMCOMPONENTVERSION.trim()
-const sbomQuality = process.env.INPUT_SBOMQUALITY.trim()
+// const filePath = process.env.INPUT_FILEPATH.trim()
+// const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
+// const accessKey = process.env.INPUT_ACCESSKEY.trim()
+// const manufactureName = process.env.INPUT_MANUFACTURENAME.trim()
+// const supplierName = process.env.INPUT_SUPPLIERNAME.trim()
+// const subType = process.env.INPUT_SUBTYPE.trim()
+// const threshold = process.env.INPUT_THRESHOLD.trim()
+// const pkgType = process.env.INPUT_PKGTYPE.trim()
+// const sbomComponentName = process.env.INPUT_SBOMCOMPONENTNAME.trim()
+// const namespace = process.env.INPUT_NAMESPACE.trim()
+// const sbomComponentVersion = process.env.INPUT_SBOMCOMPONENTVERSION.trim()
+// const sbomQuality = process.env.INPUT_SBOMQUALITY.trim()
 
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
 
