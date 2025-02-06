@@ -6044,8 +6044,8 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
 
 
 
-const core = require('@actions/core');
-const github = require('@actions/github');
+// const core = require('@actions/core');
+// const github = require('@actions/github');
 
 // let url = core.getInput(url);
 // const filePath = core.getInput(filePath);
