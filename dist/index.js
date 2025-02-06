@@ -33987,9 +33987,6 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
 
 
 
-// const core = require('@actions/core');
-// const github = require('@actions/github');
-
 let url = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('url');
 const filePath = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('filePath');
 const secretAccessKey = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('secretAccessKey');
@@ -34003,21 +34000,6 @@ const sbomComponentName = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('s
 const namespace = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('namespace');
 const sbomComponentVersion = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('sbomComponentVersion');
 const sbomQuality = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('sbomQuality');
-
-
-// url = process.env.INPUT_URL.trim()
-// const filePath = process.env.INPUT_FILEPATH.trim()
-// const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
-// const accessKey = process.env.INPUT_ACCESSKEY.trim()
-// const manufactureName = process.env.INPUT_MANUFACTURENAME.trim()
-// const supplierName = process.env.INPUT_SUPPLIERNAME.trim()
-// const subType = process.env.INPUT_SUBTYPE.trim()
-// const threshold = process.env.INPUT_THRESHOLD.trim()
-// const pkgType = process.env.INPUT_PKGTYPE.trim()
-// const sbomComponentName = process.env.INPUT_SBOMCOMPONENTNAME.trim()
-// const namespace = process.env.INPUT_NAMESPACE.trim()
-// const sbomComponentVersion = process.env.INPUT_SBOMCOMPONENTVERSION.trim()
-// const sbomQuality = process.env.INPUT_SBOMQUALITY.trim()
 
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
 
