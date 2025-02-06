@@ -9,7 +9,7 @@ import * as core from '@actions/core';
 // const core = require('@actions/core');
 // const github = require('@actions/github');
 
-let url = core.getInput(url);
+let url = core.getInput('url');
 // const filePath = core.getInput(filePath);
 // const secretAccessKey = core.getInput(secretAccessKey);
 // const accessKey = core.getInput(accessKey);
