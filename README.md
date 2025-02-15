@@ -218,7 +218,23 @@ jobs:
           sbomComponentVersion:     8.8.5
           namespace: example9      
           manufactureName: my-example-manufacture-organization  
-          supplierName: my-example-supplier-organization       
+          supplierName: my-example-supplier-organization  
+      
+      ############################################################################################  
+      # SBOM and license autocorrection can be toggled by setting the optional parameters 
+      # sbomAutocorrection and sbomLicenseCorrection
+      # These parameters are boolean, and must be either true or false
+      ############################################################################################ 
+      - name: Import an SPDX SBOM with autocorrection and license autocorrection set to "true"
+        uses: cybeats/sbom-studio-action@v1
+        with:
+          url:   ${{ env.API_URL }}  
+          filePath:  ./spdx-example-application.spdx  
+          secretAccessKey:   ${{ secrets.SECRETKEY }}  
+          accessKey:   ${{ secrets.ACCESSKEY }}  
+          subType:   application 
+          sbomAutocorrection: true
+          sbomLicenseCorrection: true
 ```
 
 #### Required Fields
@@ -239,6 +255,8 @@ jobs:
     sbomComponentName
     namespace
     sbomComponentVersion
+    sbomAutocorrection
+    sbomLicenseCorrection
 
 #### NOTE
 
