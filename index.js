@@ -4,25 +4,56 @@ import {uploadFile} from "./service/file.upload.service.js";
 import {getDependencyVulnearabilities} from "./service/dependency.vulnerabilities.service.js";
 import {checkFile, fileCheckSumCalculate} from "./service/sha.service.js";
 import path from "path";
+import * as core from '@actions/core';
 
-const url = process.env.INPUT_URL.trim()
-const filePath = process.env.INPUT_FILEPATH.trim()
-const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
-const accessKey = process.env.INPUT_ACCESSKEY.trim()
-const manufactureName = process.env.INPUT_MANUFACTURENAME.trim()
-const supplierName = process.env.INPUT_SUPPLIERNAME.trim()
-const subType = process.env.INPUT_SUBTYPE.trim()
-const threshold = process.env.INPUT_THRESHOLD.trim()
-const pkgType = process.env.INPUT_PKGTYPE.trim()
-const sbomComponentName = process.env.INPUT_SBOMCOMPONENTNAME.trim()
-const namespace = process.env.INPUT_NAMESPACE.trim()
-const sbomComponentVersion = process.env.INPUT_SBOMCOMPONENTVERSION.trim()
-const sbomQuality = process.env.INPUT_SBOMQUALITY.trim()
+let url = core.getInput('url');
+const filePath = core.getInput('filePath');
+const secretAccessKey = core.getInput('secretAccessKey');
+const accessKey = core.getInput('accessKey');
+const manufactureName = core.getInput('manufactureName');
+const supplierName = core.getInput('supplierName');
+const subType = core.getInput('subType');
+const threshold = core.getInput('threshold');
+const pkgType = core.getInput('pkgType');
+const sbomComponentName = core.getInput('sbomComponentName');
+const namespace = core.getInput('namespace');
+const sbomComponentVersion = core.getInput('sbomComponentVersion');
+const sbomQuality = core.getInput('sbomQuality');
+const inputsbomAutocorrection = core.getInput('sbomAutocorrection');
+const inputsbomLicenseCorrection = core.getInput('sbomLicenseCorrection');
+
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
+
+let sbomAutocorrection;
+let sbomLicenseCorrection;
+
+const bools = ['true', 'false'];
+
+if (inputsbomAutocorrection) {
+    
+    if (bools.includes(inputsbomAutocorrection.toLowerCase())){
+    sbomAutocorrection = inputsbomAutocorrection.toLowerCase() == 'true'? true : false;
+    }
+    else {
+        console.log("sbomAutocorrection must have a value of either true or false");
+        process.exit(1); 
+    }
+}
+
+if (inputsbomLicenseCorrection) {
+    
+    if (bools.includes(inputsbomLicenseCorrection.toLowerCase())){
+    sbomLicenseCorrection = inputsbomLicenseCorrection.toLowerCase() == 'true'? true : false;
+    }
+    else {
+        console.log("sbomLicenseCorrection must have a value of either true or false");
+        process.exit(1);
+    }
+}
 
 let contentType;
 if (!url || !filePath || !secretAccessKey || !accessKey || !subType) {
-    console.log("Please provide all required parameters: url, filePath, accessKey, secretAccessKey, and subType.");
+    console.log("Please provide all required parameters: url, filePath, accessKey, secretAccessKey and subType.");
     process.exit(1);
 }
 
@@ -34,6 +65,11 @@ if (!(optionalArgsPresent || optionalArgsAbsent)) {
         " and cannot be used individually.")
     process.exit(1)
 }
+
+if (url.endsWith('/')){
+    url = url.substring(0, url.length -1);
+}
+
 const regex = /^https:\/\/[^ "]+$/;
 if (!regex.test(url)) {
     console.log("Incorrect api url. Please adjust configuration.")
@@ -81,7 +117,9 @@ const jsonBody = generateJson(
     pkgType,
     sbomComponentName,
     sbomComponentVersion,
-    namespace
+    namespace,
+    sbomAutocorrection,
+    sbomLicenseCorrection
 );
 if (jsonBody == "") {
     console.log("Wrong config.")
@@ -157,8 +195,10 @@ while (runLoop) {
     if (status == 7110 && enrichmentStatus == 7010) {
         runLoop = false;
         importId = result?.data?.id;
-        sbomQualityPct = result?.data?.sbomQualitySummary?.gradePct;
-        sbomQualityGrade = result?.data?.sbomQualitySummary?.gradeLetter;
+        
+        sbomQualityGrade = result?.data?.sbomQualitySummaryV2?.gradeLetter ? result?.data?.sbomQualitySummaryV2?.gradeLetter : result?.data?.sbomQualitySummary?.gradeLetter;
+        sbomQualityPct = result?.data?.sbomQualitySummaryV2?.gradePct ? Math.round(result?.data?.sbomQualitySummaryV2?.gradePct) : result?.data?.sbomQualitySummary?.gradePct
+
     }
     await new Promise((r) => setTimeout(r, 15000));
 }
@@ -249,7 +289,7 @@ if (threshold != undefined && threshold != '') {
 }
 if (sbomQuality != undefined) {
     if (sbomQuality > sbomQualityPct) {
-        console.log("Sbom Quality bellow acceptable parameter. Build failing.")
+        console.log("Sbom Quality below acceptable parameter. Build failing.")
         process.exit(1)
     }
 }

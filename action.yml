@@ -44,6 +44,12 @@ inputs:
   sbomComponentVersion:
     required: false
     description: 'SBOM Component Version'
+  sbomAutocorrection:
+    required: false
+    description: 'SBOM Autocorrection'
+  sbomLicenseCorrection:
+    required: false
+    description: 'SBOM License Correction'
 outputs:
   report:
     description: 'Displays found vulnerabilities and their information'
