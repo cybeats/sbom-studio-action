@@ -34187,7 +34187,7 @@ while (runLoop) {
         console.log("File " + fileName + " has been imported.");
         importedAt = false;
     }
-    if (status == 8001 || status == 8002 || status == 8003 || status == 8004) {
+    if (status == 8001 || status == 8002 || status == 8003 || status == 8004 || status == 8005) {
         console.log(result?.data?.statusDesc);
         if (result?.data?.errorMsg != undefined) console.log(result.data.errorMsg);
 
