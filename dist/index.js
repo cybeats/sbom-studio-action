@@ -34000,6 +34000,7 @@ __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependen
 /* harmony import */ var _service_sha_service_js__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(8761);
 /* harmony import */ var path__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(6928);
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(3601);
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_7__ = __nccwpck_require__(9896);
 
 
 
@@ -34023,6 +34024,7 @@ const sbomComponentVersion = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput
 const sbomQuality = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('sbomQuality');
 const inputsbomAutocorrection = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('sbomAutocorrection');
 const inputsbomLicenseCorrection = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('sbomLicenseCorrection');
+const analysisReportPath = _actions_core__WEBPACK_IMPORTED_MODULE_5__.getInput('analysisReportPath');
 
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
 
@@ -34217,7 +34219,12 @@ console.log(
 );
 
 let failBuild = false;
-if (threshold != undefined && threshold != '') {
+const hasThreshold = threshold != undefined && threshold != '';
+const reportPath = analysisReportPath && analysisReportPath.trim() !== ''
+        ? analysisReportPath.trim()
+        : undefined;
+const shouldFetchVulnerabilities = hasThreshold || reportPath;
+if (shouldFetchVulnerabilities) {
     let result = await (0,_service_dependency_vulnerabilities_service_js__WEBPACK_IMPORTED_MODULE_2__/* .getDependencyVulnearabilities */ .j)(
         importId,
         secretAccessKey,
@@ -34231,62 +34238,93 @@ if (threshold != undefined && threshold != '') {
             accessKey,
             url, proxyRunning
         );
-        console.log(result)
+        console.log(result);
         await new Promise((r) => setTimeout(r, 15000));
     }
-    const lowVulns = result?.entities[0]?.depsVulnStats?.l;
-    const mediumVulns = result?.entities[0]?.depsVulnStats?.m;
-    const highVulns = result?.entities[0]?.depsVulnStats?.h;
-    const criticalVulns = result?.entities[0]?.depsVulnStats?.c;
-    switch (threshold) {
-        case "Low":
-            if (
-                lowVulns != undefined ||
-                mediumVulns != undefined ||
-                highVulns != undefined ||
-                criticalVulns != undefined
-            ) {
-                failBuild = true;
+    const entity = result?.entities ? result.entities[0] : undefined;
+    const lowVulns = entity?.depsVulnStats?.l;
+    const mediumVulns = entity?.depsVulnStats?.m;
+    const highVulns = entity?.depsVulnStats?.h;
+    const criticalVulns = entity?.depsVulnStats?.c;
+    if (hasThreshold) {
+        switch (threshold) {
+            case "Low":
+                if (
+                    lowVulns != undefined ||
+                    mediumVulns != undefined ||
+                    highVulns != undefined ||
+                    criticalVulns != undefined
+                ) {
+                    failBuild = true;
+                }
+                break;
+            case "Medium":
+                if (
+                    mediumVulns != undefined ||
+                    highVulns != undefined ||
+                    criticalVulns != undefined
+                ) {
+                    failBuild = true;
+                }
+                break;
+            case "High":
+                if (highVulns != undefined || criticalVulns != undefined) {
+                    failBuild = true;
+                }
+                break;
+            case "Critical":
+                if (criticalVulns != undefined) {
+                    failBuild = true;
+                }
+                break;
+        }
+        if (criticalVulns != undefined)
+            console.log("Critical Vulnerabilities found " + criticalVulns);
+        if (highVulns != undefined)
+            console.log("High Vulnerabilities found " + highVulns);
+        if (mediumVulns != undefined)
+            console.log("Medium Vulnerabilities found " + mediumVulns);
+        if (lowVulns != undefined)
+            console.log("Low Vulnerabilities found " + lowVulns);
+        if (entity?.depsVulns) {
+            for (let i = 0; i < entity.depsVulns.length; i++) {
+                console.log("--------------");
+                console.log(entity?.depsVulns[i]?.id);
+                console.log(entity?.depsVulns[i]?.summary);
             }
-            break;
-        case "Medium":
-            if (
-                mediumVulns != undefined ||
-                highVulns != undefined ||
-                criticalVulns != undefined
-            ) {
-                failBuild = true;
-            }
-            break;
-        case "High":
-            if (highVulns != undefined || criticalVulns != undefined) {
-                failBuild = true;
-            }
-            break;
-        case "Critical":
-            if (criticalVulns != undefined) {
-                failBuild = true;
-            }
-            break;
-    }
-    if (criticalVulns != undefined)
-        console.log("Critical Vulnerabilities found " + criticalVulns);
-    if (highVulns != undefined)
-        console.log("High Vulnerabilities found " + highVulns);
-    if (mediumVulns != undefined)
-        console.log("Medium Vulnerabilities found " + mediumVulns);
-    if (lowVulns != undefined)
-        console.log("Low Vulnerabilities found " + lowVulns);
-    if (result?.entities[0]?.depsVulns) {
-        for (let i = 0; i < result.entities[0].depsVulns.length; i++) {
-            console.log("--------------");
-            console.log(result?.entities[0]?.depsVulns[i]?.id);
-            console.log(result?.entities[0]?.depsVulns[i]?.summary);
+        }
+        if (failBuild) {
+            console.log("Vulnerabilities found above the set threshold. Build failing.");
+            process.exit(1);
         }
     }
-    if (failBuild) {
-        console.log("Vulnerabilities found above the set threshold. Build failing.")
-        process.exit(1);
+    const reportContent = {
+        importId,
+        sbomQuality: {
+            grade: sbomQualityGrade,
+            percent: sbomQualityPct
+        },
+        vulnerabilityStats: {
+            low: lowVulns ?? 0,
+            medium: mediumVulns ?? 0,
+            high: highVulns ?? 0,
+            critical: criticalVulns ?? 0
+        },
+        vulnerabilities: entity?.depsVulns ?? []
+    };
+    _actions_core__WEBPACK_IMPORTED_MODULE_5__.setOutput('report', JSON.stringify(reportContent));
+    if (reportPath) {
+        try {
+            const directory = path__WEBPACK_IMPORTED_MODULE_4__.dirname(reportPath);
+            if (directory && directory !== '.') {
+                fs__WEBPACK_IMPORTED_MODULE_7__.mkdirSync(directory, {recursive: true});
+            }
+            fs__WEBPACK_IMPORTED_MODULE_7__.writeFileSync(reportPath, JSON.stringify(reportContent, null, 2));
+            console.log("SBOM analysis report written to " + reportPath);
+        } catch (error) {
+            console.log("Failed to write SBOM analysis report: " + error.message);
+            process.exit(1);
+        }
     }
 }
 if (sbomQuality != undefined) {

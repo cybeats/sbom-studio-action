@@ -5,6 +5,7 @@ import {getDependencyVulnearabilities} from "./service/dependency.vulnerabilitie
 import {checkFile, fileCheckSumCalculate} from "./service/sha.service.js";
 import path from "path";
 import * as core from '@actions/core';
+import fs from "fs";
 
 let url = core.getInput('url');
 const filePath = core.getInput('filePath');
@@ -21,6 +22,7 @@ const sbomComponentVersion = core.getInput('sbomComponentVersion');
 const sbomQuality = core.getInput('sbomQuality');
 const inputsbomAutocorrection = core.getInput('sbomAutocorrection');
 const inputsbomLicenseCorrection = core.getInput('sbomLicenseCorrection');
+const analysisReportPath = core.getInput('analysisReportPath');
 
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
 
@@ -215,7 +217,13 @@ console.log(
 );
 
 let failBuild = false;
-if (threshold != undefined && threshold != '') {
+const hasThreshold = threshold != undefined && threshold != '';
+const reportPath =
+    analysisReportPath && analysisReportPath.trim() !== ''
+        ? analysisReportPath.trim()
+        : undefined;
+const shouldFetchVulnerabilities = hasThreshold || reportPath;
+if (shouldFetchVulnerabilities) {
     let result = await getDependencyVulnearabilities(
         importId,
         secretAccessKey,
@@ -229,62 +237,93 @@ if (threshold != undefined && threshold != '') {
             accessKey,
             url, proxyRunning
         );
-        console.log(result)
+        console.log(result);
         await new Promise((r) => setTimeout(r, 15000));
     }
-    const lowVulns = result?.entities[0]?.depsVulnStats?.l;
-    const mediumVulns = result?.entities[0]?.depsVulnStats?.m;
-    const highVulns = result?.entities[0]?.depsVulnStats?.h;
-    const criticalVulns = result?.entities[0]?.depsVulnStats?.c;
-    switch (threshold) {
-        case "Low":
-            if (
-                lowVulns != undefined ||
-                mediumVulns != undefined ||
-                highVulns != undefined ||
-                criticalVulns != undefined
-            ) {
-                failBuild = true;
+    const entity = result?.entities ? result.entities[0] : undefined;
+    const lowVulns = entity?.depsVulnStats?.l;
+    const mediumVulns = entity?.depsVulnStats?.m;
+    const highVulns = entity?.depsVulnStats?.h;
+    const criticalVulns = entity?.depsVulnStats?.c;
+    if (hasThreshold) {
+        switch (threshold) {
+            case "Low":
+                if (
+                    lowVulns != undefined ||
+                    mediumVulns != undefined ||
+                    highVulns != undefined ||
+                    criticalVulns != undefined
+                ) {
+                    failBuild = true;
+                }
+                break;
+            case "Medium":
+                if (
+                    mediumVulns != undefined ||
+                    highVulns != undefined ||
+                    criticalVulns != undefined
+                ) {
+                    failBuild = true;
+                }
+                break;
+            case "High":
+                if (highVulns != undefined || criticalVulns != undefined) {
+                    failBuild = true;
+                }
+                break;
+            case "Critical":
+                if (criticalVulns != undefined) {
+                    failBuild = true;
+                }
+                break;
+        }
+        if (criticalVulns != undefined)
+            console.log("Critical Vulnerabilities found " + criticalVulns);
+        if (highVulns != undefined)
+            console.log("High Vulnerabilities found " + highVulns);
+        if (mediumVulns != undefined)
+            console.log("Medium Vulnerabilities found " + mediumVulns);
+        if (lowVulns != undefined)
+            console.log("Low Vulnerabilities found " + lowVulns);
+        if (entity?.depsVulns) {
+            for (let i = 0; i < entity.depsVulns.length; i++) {
+                console.log("--------------");
+                console.log(entity?.depsVulns[i]?.id);
+                console.log(entity?.depsVulns[i]?.summary);
             }
-            break;
-        case "Medium":
-            if (
-                mediumVulns != undefined ||
-                highVulns != undefined ||
-                criticalVulns != undefined
-            ) {
-                failBuild = true;
-            }
-            break;
-        case "High":
-            if (highVulns != undefined || criticalVulns != undefined) {
-                failBuild = true;
-            }
-            break;
-        case "Critical":
-            if (criticalVulns != undefined) {
-                failBuild = true;
-            }
-            break;
-    }
-    if (criticalVulns != undefined)
-        console.log("Critical Vulnerabilities found " + criticalVulns);
-    if (highVulns != undefined)
-        console.log("High Vulnerabilities found " + highVulns);
-    if (mediumVulns != undefined)
-        console.log("Medium Vulnerabilities found " + mediumVulns);
-    if (lowVulns != undefined)
-        console.log("Low Vulnerabilities found " + lowVulns);
-    if (result?.entities[0]?.depsVulns) {
-        for (let i = 0; i < result.entities[0].depsVulns.length; i++) {
-            console.log("--------------");
-            console.log(result?.entities[0]?.depsVulns[i]?.id);
-            console.log(result?.entities[0]?.depsVulns[i]?.summary);
+        }
+        if (failBuild) {
+            console.log("Vulnerabilities found above the set threshold. Build failing.");
+            process.exit(1);
         }
     }
-    if (failBuild) {
-        console.log("Vulnerabilities found above the set threshold. Build failing.")
-        process.exit(1);
+    const reportContent = {
+        importId,
+        sbomQuality: {
+            grade: sbomQualityGrade,
+            percent: sbomQualityPct
+        },
+        vulnerabilityStats: {
+            low: lowVulns ?? 0,
+            medium: mediumVulns ?? 0,
+            high: highVulns ?? 0,
+            critical: criticalVulns ?? 0
+        },
+        vulnerabilities: entity?.depsVulns ?? []
+    };
+    core.setOutput('report', JSON.stringify(reportContent));
+    if (reportPath) {
+        try {
+            const directory = path.dirname(reportPath);
+            if (directory && directory !== '.') {
+                fs.mkdirSync(directory, {recursive: true});
+            }
+            fs.writeFileSync(reportPath, JSON.stringify(reportContent, null, 2));
+            console.log("SBOM analysis report written to " + reportPath);
+        } catch (error) {
+            console.log("Failed to write SBOM analysis report: " + error.message);
+            process.exit(1);
+        }
     }
 }
 if (sbomQuality != undefined) {
