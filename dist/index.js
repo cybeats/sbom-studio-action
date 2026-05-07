@@ -34246,6 +34246,7 @@ if (shouldFetchVulnerabilities) {
     const mediumVulns = entity?.depsVulnStats?.m;
     const highVulns = entity?.depsVulnStats?.h;
     const criticalVulns = entity?.depsVulnStats?.c;
+	
 	const reportContent = {
         importId,
         sbomQuality: {
