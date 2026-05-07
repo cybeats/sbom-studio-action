@@ -245,6 +245,35 @@ if (shouldFetchVulnerabilities) {
     const mediumVulns = entity?.depsVulnStats?.m;
     const highVulns = entity?.depsVulnStats?.h;
     const criticalVulns = entity?.depsVulnStats?.c;
+    const reportContent = {
+        importId,
+        sbomQuality: {
+            grade: sbomQualityGrade,
+            percent: sbomQualityPct
+        },
+        vulnerabilityStats: {
+            low: lowVulns ?? 0,
+            medium: mediumVulns ?? 0,
+            high: highVulns ?? 0,
+            critical: criticalVulns ?? 0
+        },
+        vulnerabilities: entity?.depsVulns ?? []
+    };
+    core.setOutput('report', JSON.stringify(reportContent));
+    if (reportPath) {
+        try {
+            const directory = path.dirname(reportPath);
+            if (directory && directory !== '.') {
+                fs.mkdirSync(directory, {recursive: true});
+            }
+            fs.writeFileSync(reportPath, JSON.stringify(reportContent, null, 2));
+            console.log("SBOM analysis report written to " + reportPath);
+        } catch (error) {
+            console.log("Failed to write SBOM analysis report: " + error.message);
+            process.exit(1);
+        }
+    }
+}
     if (hasThreshold) {
         switch (threshold) {
             case "Low":
@@ -297,35 +326,7 @@ if (shouldFetchVulnerabilities) {
             process.exit(1);
         }
     }
-    const reportContent = {
-        importId,
-        sbomQuality: {
-            grade: sbomQualityGrade,
-            percent: sbomQualityPct
-        },
-        vulnerabilityStats: {
-            low: lowVulns ?? 0,
-            medium: mediumVulns ?? 0,
-            high: highVulns ?? 0,
-            critical: criticalVulns ?? 0
-        },
-        vulnerabilities: entity?.depsVulns ?? []
-    };
-    core.setOutput('report', JSON.stringify(reportContent));
-    if (reportPath) {
-        try {
-            const directory = path.dirname(reportPath);
-            if (directory && directory !== '.') {
-                fs.mkdirSync(directory, {recursive: true});
-            }
-            fs.writeFileSync(reportPath, JSON.stringify(reportContent, null, 2));
-            console.log("SBOM analysis report written to " + reportPath);
-        } catch (error) {
-            console.log("Failed to write SBOM analysis report: " + error.message);
-            process.exit(1);
-        }
-    }
-}
+    
 if (sbomQuality != undefined) {
     if (sbomQuality > sbomQualityPct) {
         console.log("Sbom Quality below acceptable parameter. Build failing.")
