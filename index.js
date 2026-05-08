@@ -261,19 +261,32 @@ if (shouldFetchVulnerabilities) {
     };
     core.setOutput('report', JSON.stringify(reportContent));
     if (reportPath) {
+        const resolvedReportPath = path.resolve(reportPath);
+        const workspace = process.env.GITHUB_WORKSPACE
+            ? path.resolve(process.env.GITHUB_WORKSPACE)
+            : undefined;
+        if (
+            workspace &&
+            resolvedReportPath !== workspace &&
+            !resolvedReportPath.startsWith(workspace + path.sep)
+        ) {
+            core.setFailed(
+                "analysisReportPath '" + reportPath + "' resolves outside GITHUB_WORKSPACE. Refusing to write."
+            );
+            process.exit(1);
+        }
         try {
-            const directory = path.dirname(reportPath);
+            const directory = path.dirname(resolvedReportPath);
             if (directory && directory !== '.') {
                 fs.mkdirSync(directory, {recursive: true});
             }
-            fs.writeFileSync(reportPath, JSON.stringify(reportContent, null, 2));
-            console.log("SBOM analysis report written to " + reportPath);
+            fs.writeFileSync(resolvedReportPath, JSON.stringify(reportContent, null, 2));
+            console.log("SBOM analysis report written to " + resolvedReportPath);
         } catch (error) {
-            console.log("Failed to write SBOM analysis report: " + error.message);
+            core.setFailed("Failed to write SBOM analysis report: " + error.message);
             process.exit(1);
         }
     }
-}
     if (hasThreshold) {
         switch (threshold) {
             case "Low":
@@ -326,7 +339,8 @@ if (shouldFetchVulnerabilities) {
             process.exit(1);
         }
     }
-    
+}
+
 if (sbomQuality != undefined) {
     if (sbomQuality > sbomQualityPct) {
         console.log("Sbom Quality below acceptable parameter. Build failing.")
