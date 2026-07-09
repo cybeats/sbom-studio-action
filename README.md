@@ -220,10 +220,9 @@ jobs:
           pkgType:   maven   
           sbomComponentName: appbomination 
           sbomComponentVersion:     8.8.5
-          namespace: example9      
+          namespace: example9    
           manufactureName: my-example-manufacture-organization  
           supplierName: my-example-supplier-organization  
-          analysisReportPath: reports/sbom-analysis.json  
       
       ############################################################################################  
       # SBOM and license autocorrection can be toggled by setting the optional parameters 
