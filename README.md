@@ -200,6 +200,10 @@ jobs:
       # Optional parameters to stop build 
       # - sbomQuality, threshold
       #
+      # Optional parameters for reporting
+      # - analysisReportPath   desired file path for a JSON SBOM analysis report
+      #                        this also collects vulnerabilities when no threshold is provided
+      #
       # All the input parameters are supplied the following example.
       #
       ############################################################################################
@@ -219,7 +223,7 @@ jobs:
           namespace: example9    
           manufactureName: my-example-manufacture-organization  
           supplierName: my-example-supplier-organization  
-    
+      
       ############################################################################################  
       # SBOM and license autocorrection can be toggled by setting the optional parameters 
       # sbomAutocorrection and sbomLicenseCorrection
@@ -257,6 +261,11 @@ jobs:
     sbomComponentVersion
     sbomAutocorrection
     sbomLicenseCorrection
+    analysisReportPath
+
+#### Persisting the Analysis Report
+
+Set `analysisReportPath` to record the SBOM analysis data as a JSON file. The action will create parent directories when needed and still fetch vulnerability details even if no `threshold` is provided. The same summary payload is also exposed through the `report` action output.
 
 #### NOTE
 

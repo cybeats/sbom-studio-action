@@ -34554,13 +34554,15 @@ try {
 /***/ ((__webpack_module__, __unused_webpack___webpack_exports__, __nccwpck_require__) => {
 
 __nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony import */ var _service_json_generator_js__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(2854);
+/* harmony import */ var _service_json_generator_js__WEBPACK_IMPORTED_MODULE_7__ = __nccwpck_require__(2854);
 /* harmony import */ var _service_import_service_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(3291);
 /* harmony import */ var _service_file_upload_service_js__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(5807);
 /* harmony import */ var _service_dependency_vulnerabilities_service_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(5203);
 /* harmony import */ var _service_sha_service_js__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(4580);
 /* harmony import */ var path__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(6928);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(4345);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(2280);
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(9896);
+
 
 
 
@@ -34584,6 +34586,7 @@ const sbomComponentVersion = _actions_core__WEBPACK_IMPORTED_MODULE_5__/* .getIn
 const sbomQuality = _actions_core__WEBPACK_IMPORTED_MODULE_5__/* .getInput */ .V4('sbomQuality');
 const inputsbomAutocorrection = _actions_core__WEBPACK_IMPORTED_MODULE_5__/* .getInput */ .V4('sbomAutocorrection');
 const inputsbomLicenseCorrection = _actions_core__WEBPACK_IMPORTED_MODULE_5__/* .getInput */ .V4('sbomLicenseCorrection');
+const analysisReportPath = _actions_core__WEBPACK_IMPORTED_MODULE_5__/* .getInput */ .V4('analysisReportPath');
 
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
 
@@ -34670,7 +34673,7 @@ else contentType = "application/" + extension.replace(".", "");
 
 fileName = path__WEBPACK_IMPORTED_MODULE_4__.basename(filePath);
 const fileCheckSum = (0,_service_sha_service_js__WEBPACK_IMPORTED_MODULE_3__/* .fileCheckSumCalculate */ .cd)(filePath);
-const jsonBody = (0,_service_json_generator_js__WEBPACK_IMPORTED_MODULE_6__/* .generateJson */ .m)(
+const jsonBody = (0,_service_json_generator_js__WEBPACK_IMPORTED_MODULE_7__/* .generateJson */ .m)(
     fileCheckSum,
     fileName,
     contentType,
@@ -34778,7 +34781,13 @@ console.log(
 );
 
 let failBuild = false;
-if (threshold != undefined && threshold != '') {
+const hasThreshold = threshold != undefined && threshold != '';
+const reportPath =
+    analysisReportPath && analysisReportPath.trim() !== ''
+        ? analysisReportPath.trim()
+        : undefined;
+const shouldFetchVulnerabilities = hasThreshold || reportPath;
+if (shouldFetchVulnerabilities) {
     let result = await (0,_service_dependency_vulnerabilities_service_js__WEBPACK_IMPORTED_MODULE_2__/* .getDependencyVulnearabilities */ .j)(
         importId,
         secretAccessKey,
@@ -34792,88 +34801,173 @@ if (threshold != undefined && threshold != '') {
             accessKey,
             url, proxyRunning
         );
-        console.log(result)
+        console.log(result);
         await new Promise((r) => setTimeout(r, 15000));
     }
-    const lowVulns = result?.entities[0]?.depsVulnStats?.l;
-    const mediumVulns = result?.entities[0]?.depsVulnStats?.m;
-    const highVulns = result?.entities[0]?.depsVulnStats?.h;
-    const criticalVulns = result?.entities[0]?.depsVulnStats?.c;
-    switch (threshold) {
-        case "Low":
-            if (
-                lowVulns != undefined ||
-                mediumVulns != undefined ||
-                highVulns != undefined ||
-                criticalVulns != undefined
-            ) {
-                failBuild = true;
+    const entity = result?.entities ? result.entities[0] : undefined;
+    const lowVulns = entity?.depsVulnStats?.l;
+    const mediumVulns = entity?.depsVulnStats?.m;
+    const highVulns = entity?.depsVulnStats?.h;
+    const criticalVulns = entity?.depsVulnStats?.c;
+    const reportContent = {
+        importId,
+        sbomQuality: {
+            grade: sbomQualityGrade,
+            percent: sbomQualityPct
+        },
+        vulnerabilityStats: {
+            low: lowVulns ?? 0,
+            medium: mediumVulns ?? 0,
+            high: highVulns ?? 0,
+            critical: criticalVulns ?? 0
+        },
+        vulnerabilities: entity?.depsVulns ?? []
+    };
+    _actions_core__WEBPACK_IMPORTED_MODULE_5__/* .setOutput */ .uH('report', JSON.stringify(reportContent));
+    if (reportPath) {
+        const resolvedReportPath = path__WEBPACK_IMPORTED_MODULE_4__.resolve(reportPath);
+        const workspace = process.env.GITHUB_WORKSPACE
+            ? path__WEBPACK_IMPORTED_MODULE_4__.resolve(process.env.GITHUB_WORKSPACE)
+            : undefined;
+        if (
+            workspace &&
+            resolvedReportPath !== workspace &&
+            !resolvedReportPath.startsWith(workspace + path__WEBPACK_IMPORTED_MODULE_4__.sep)
+        ) {
+            _actions_core__WEBPACK_IMPORTED_MODULE_5__/* .setFailed */ .C1(
+                "analysisReportPath '" + reportPath + "' resolves outside GITHUB_WORKSPACE. Refusing to write."
+            );
+            process.exit(1);
+        }
+        try {
+            const directory = path__WEBPACK_IMPORTED_MODULE_4__.dirname(resolvedReportPath);
+            if (directory && directory !== '.') {
+                fs__WEBPACK_IMPORTED_MODULE_6__.mkdirSync(directory, {recursive: true});
             }
-            break;
-        case "Medium":
-            if (
-                mediumVulns != undefined ||
-                highVulns != undefined ||
-                criticalVulns != undefined
-            ) {
-                failBuild = true;
-            }
-            break;
-        case "High":
-            if (highVulns != undefined || criticalVulns != undefined) {
-                failBuild = true;
-            }
-            break;
-        case "Critical":
-            if (criticalVulns != undefined) {
-                failBuild = true;
-            }
-            break;
-    }
-    if (criticalVulns != undefined)
-        console.log("Critical Vulnerabilities found " + criticalVulns);
-    if (highVulns != undefined)
-        console.log("High Vulnerabilities found " + highVulns);
-    if (mediumVulns != undefined)
-        console.log("Medium Vulnerabilities found " + mediumVulns);
-    if (lowVulns != undefined)
-        console.log("Low Vulnerabilities found " + lowVulns);
-    if (result?.entities[0]?.depsVulns) {
-        for (let i = 0; i < result.entities[0].depsVulns.length; i++) {
-            console.log("--------------");
-            console.log(result?.entities[0]?.depsVulns[i]?.id);
-            console.log(result?.entities[0]?.depsVulns[i]?.summary);
+            fs__WEBPACK_IMPORTED_MODULE_6__.writeFileSync(resolvedReportPath, JSON.stringify(reportContent, null, 2));
+            console.log("SBOM analysis report written to " + resolvedReportPath);
+        } catch (error) {
+            _actions_core__WEBPACK_IMPORTED_MODULE_5__/* .setFailed */ .C1("Failed to write SBOM analysis report: " + error.message);
+            process.exit(1);
         }
     }
-    if (failBuild) {
-        console.log("Vulnerabilities found above the set threshold. Build failing.")
-        process.exit(1);
+    if (hasThreshold) {
+        switch (threshold) {
+            case "Low":
+                if (
+                    lowVulns != undefined ||
+                    mediumVulns != undefined ||
+                    highVulns != undefined ||
+                    criticalVulns != undefined
+                ) {
+                    failBuild = true;
+                }
+                break;
+            case "Medium":
+                if (
+                    mediumVulns != undefined ||
+                    highVulns != undefined ||
+                    criticalVulns != undefined
+                ) {
+                    failBuild = true;
+                }
+                break;
+            case "High":
+                if (highVulns != undefined || criticalVulns != undefined) {
+                    failBuild = true;
+                }
+                break;
+            case "Critical":
+                if (criticalVulns != undefined) {
+                    failBuild = true;
+                }
+                break;
+        }
+        if (criticalVulns != undefined)
+            console.log("Critical Vulnerabilities found " + criticalVulns);
+        if (highVulns != undefined)
+            console.log("High Vulnerabilities found " + highVulns);
+        if (mediumVulns != undefined)
+            console.log("Medium Vulnerabilities found " + mediumVulns);
+        if (lowVulns != undefined)
+            console.log("Low Vulnerabilities found " + lowVulns);
+        if (entity?.depsVulns) {
+            for (let i = 0; i < entity.depsVulns.length; i++) {
+                console.log("--------------");
+                console.log(entity?.depsVulns[i]?.id);
+                console.log(entity?.depsVulns[i]?.summary);
+            }
+        }
+        if (failBuild) {
+            console.log("Vulnerabilities found above the set threshold. Build failing.");
+            process.exit(1);
+        }
     }
 }
-if (sbomQuality != undefined) {
+
+if (sbomQuality) {
     if (sbomQuality > sbomQualityPct) {
         console.log("Sbom Quality below acceptable parameter. Build failing.")
         process.exit(1)
     }
 }
+
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } }, 1);
 
 /***/ }),
 
-/***/ 4345:
+/***/ 2280:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 
 // EXPORTS
 __nccwpck_require__.d(__webpack_exports__, {
-  V4: () => (/* binding */ getInput)
+  V4: () => (/* binding */ getInput),
+  C1: () => (/* binding */ setFailed),
+  uH: () => (/* binding */ setOutput)
 });
 
-// UNUSED EXPORTS: ExitCode, addPath, debug, endGroup, error, exportVariable, getBooleanInput, getIDToken, getMultilineInput, getState, group, info, isDebug, markdownSummary, notice, platform, saveState, setCommandEcho, setFailed, setOutput, setSecret, startGroup, summary, toPlatformPath, toPosixPath, toWin32Path, warning
+// UNUSED EXPORTS: ExitCode, addPath, debug, endGroup, error, exportVariable, getBooleanInput, getIDToken, getMultilineInput, getState, group, info, isDebug, markdownSummary, notice, platform, saveState, setCommandEcho, setSecret, startGroup, summary, toPlatformPath, toPosixPath, toWin32Path, warning
 
 ;// CONCATENATED MODULE: external "os"
 const external_os_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
+;// CONCATENATED MODULE: ./node_modules/@actions/core/lib/utils.js
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * Sanitizes an input into a string so it can be passed into issueCommand safely
+ * @param input input to sanitize into a string
+ */
+function utils_toCommandValue(input) {
+    if (input === null || input === undefined) {
+        return '';
+    }
+    else if (typeof input === 'string' || input instanceof String) {
+        return input;
+    }
+    return JSON.stringify(input);
+}
+/**
+ *
+ * @param annotationProperties
+ * @returns The command properties to send with the actual annotation command
+ * See IssueCommandProperties: https://github.com/actions/runner/blob/main/src/Runner.Worker/ActionCommandManager.cs#L646
+ */
+function utils_toCommandProperties(annotationProperties) {
+    if (!Object.keys(annotationProperties).length) {
+        return {};
+    }
+    return {
+        title: annotationProperties.title,
+        file: annotationProperties.file,
+        line: annotationProperties.startLine,
+        endLine: annotationProperties.endLine,
+        col: annotationProperties.startColumn,
+        endColumn: annotationProperties.endColumn
+    };
+}
+//# sourceMappingURL=utils.js.map
 ;// CONCATENATED MODULE: ./node_modules/@actions/core/lib/command.js
 
 
@@ -34912,7 +35006,7 @@ const external_os_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta
  */
 function command_issueCommand(command, properties, message) {
     const cmd = new Command(command, properties, message);
-    process.stdout.write(cmd.toString() + os.EOL);
+    process.stdout.write(cmd.toString() + external_os_namespaceObject.EOL);
 }
 function command_issue(name, message = '') {
     command_issueCommand(name, {}, message);
@@ -34952,13 +35046,13 @@ class Command {
     }
 }
 function escapeData(s) {
-    return toCommandValue(s)
+    return utils_toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A');
 }
 function escapeProperty(s) {
-    return toCommandValue(s)
+    return utils_toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A')
@@ -34983,16 +35077,16 @@ function file_command_issueFileCommand(command, message) {
     if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
     }
-    if (!fs.existsSync(filePath)) {
+    if (!external_fs_.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
     }
-    fs.appendFileSync(filePath, `${toCommandValue(message)}${os.EOL}`, {
+    external_fs_.appendFileSync(filePath, `${utils_toCommandValue(message)}${external_os_namespaceObject.EOL}`, {
         encoding: 'utf8'
     });
 }
 function file_command_prepareKeyValueMessage(key, value) {
-    const delimiter = `ghadelimiter_${crypto.randomUUID()}`;
-    const convertedValue = toCommandValue(value);
+    const delimiter = `ghadelimiter_${external_crypto_.randomUUID()}`;
+    const convertedValue = utils_toCommandValue(value);
     // These should realistically never happen, but just in case someone finds a
     // way to exploit uuid generation let's not allow keys or values that contain
     // the delimiter.
@@ -35002,7 +35096,7 @@ function file_command_prepareKeyValueMessage(key, value) {
     if (convertedValue.includes(delimiter)) {
         throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
     }
-    return `${key}<<${delimiter}${os.EOL}${convertedValue}${os.EOL}${delimiter}`;
+    return `${key}<<${delimiter}${external_os_namespaceObject.EOL}${convertedValue}${external_os_namespaceObject.EOL}${delimiter}`;
 }
 //# sourceMappingURL=file-command.js.map
 // EXTERNAL MODULE: external "path"
@@ -37624,10 +37718,10 @@ function getBooleanInput(name, options) {
 function setOutput(name, value) {
     const filePath = process.env['GITHUB_OUTPUT'] || '';
     if (filePath) {
-        return issueFileCommand('OUTPUT', prepareKeyValueMessage(name, value));
+        return file_command_issueFileCommand('OUTPUT', file_command_prepareKeyValueMessage(name, value));
     }
-    process.stdout.write(os.EOL);
-    issueCommand('set-output', { name }, toCommandValue(value));
+    process.stdout.write(external_os_namespaceObject.EOL);
+    command_issueCommand('set-output', { name }, utils_toCommandValue(value));
 }
 /**
  * Enables or disables the echoing of commands into stdout for the rest of the step.
@@ -37671,7 +37765,7 @@ function core_debug(message) {
  * @param properties optional properties to add to the annotation.
  */
 function error(message, properties = {}) {
-    issueCommand('error', toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+    command_issueCommand('error', utils_toCommandProperties(properties), message instanceof Error ? message.toString() : message);
 }
 /**
  * Adds a warning issue
