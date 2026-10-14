@@ -50,6 +50,9 @@ inputs:
   sbomLicenseCorrection:
     required: false
     description: 'SBOM License Correction'
+  resourceGroupNames:
+    required: false
+    description: 'Resource group names to assign the SBOM to (one per line)'
 outputs:
   report:
     description: 'Displays found vulnerabilities and their information'

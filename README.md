@@ -235,6 +235,22 @@ jobs:
           subType:   application 
           sbomAutocorrection: true
           sbomLicenseCorrection: true
+
+      ############################################################################################
+      # The imported SBOM can be assigned to resource groups by name with the optional
+      # parameter resourceGroupNames, one name per line (case-sensitive, max 25)
+      ############################################################################################
+      - name: Import an SBOM and assign it to resource groups
+        uses: cybeats/sbom-studio-action@v1
+        with:
+          url:   ${{ env.API_URL }}
+          filePath:  ./spdx-example-application.spdx
+          secretAccessKey:   ${{ secrets.SECRETKEY }}
+          accessKey:   ${{ secrets.ACCESSKEY }}
+          subType:   application
+          resourceGroupNames: |
+            my-example-resource-group
+            my-other-example-resource-group
 ```
 
 #### Required Fields
@@ -257,6 +273,7 @@ jobs:
     sbomComponentVersion
     sbomAutocorrection
     sbomLicenseCorrection
+    resourceGroupNames
 
 #### NOTE
 
