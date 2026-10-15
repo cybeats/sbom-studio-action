@@ -109,3 +109,4 @@ typings/
 load.sh
 
 .vscode/
+bom.cdx.json
