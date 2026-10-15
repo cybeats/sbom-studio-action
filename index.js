@@ -23,8 +23,11 @@ const sbomQuality = core.getInput('sbomQuality');
 const inputsbomAutocorrection = core.getInput('sbomAutocorrection');
 const inputsbomLicenseCorrection = core.getInput('sbomLicenseCorrection');
 const analysisReportPath = core.getInput('analysisReportPath');
-// Drop whitespace-only lines (getMultilineInput filters before trimming) and exact duplicates
-const resourceGroupNames = [...new Set(core.getMultilineInput('resourceGroupNames').filter(name => name !== ''))];
+// One name per line and/or comma-separated; trimmed, blanks and exact duplicates dropped
+const resourceGroupNames = [...new Set(core.getMultilineInput('resourceGroupNames')
+    .flatMap(line => line.split(','))
+    .map(name => name.trim())
+    .filter(name => name !== ''))];
 
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
 

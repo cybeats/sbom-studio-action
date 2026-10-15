@@ -242,7 +242,8 @@ jobs:
 
       ############################################################################################
       # The imported SBOM can be assigned to resource groups by name with the optional
-      # parameter resourceGroupNames, one name per line (case-sensitive, max 25)
+      # parameter resourceGroupNames, one name per line and/or comma-separated (case-sensitive,
+      # max 25), e.g. resourceGroupNames: my-example-resource-group,my-other-example-resource-group
       ############################################################################################
       - name: Import an SBOM and assign it to resource groups
         uses: cybeats/sbom-studio-action@v1
