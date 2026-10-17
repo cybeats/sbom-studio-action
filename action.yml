@@ -53,6 +53,9 @@ inputs:
   analysisReportPath:
     required: false
     description: 'File path to store the SBOM analysis report as JSON'
+  resourceGroupNames:
+    required: false
+    description: 'Resource group names to assign the SBOM to (one per line and/or comma-separated)'
 outputs:
   report:
     description: 'JSON representation of the SBOM analysis summary and vulnerabilities'

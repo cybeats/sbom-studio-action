@@ -23,6 +23,11 @@ const sbomQuality = core.getInput('sbomQuality');
 const inputsbomAutocorrection = core.getInput('sbomAutocorrection');
 const inputsbomLicenseCorrection = core.getInput('sbomLicenseCorrection');
 const analysisReportPath = core.getInput('analysisReportPath');
+// One name per line and/or comma-separated; trimmed, blanks and exact duplicates dropped
+const resourceGroupNames = [...new Set(core.getMultilineInput('resourceGroupNames')
+    .flatMap(line => line.split(','))
+    .map(name => name.trim())
+    .filter(name => name !== ''))];
 
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
 
@@ -51,6 +56,15 @@ if (inputsbomLicenseCorrection) {
         console.log("sbomLicenseCorrection must have a value of either true or false");
         process.exit(1);
     }
+}
+
+if (resourceGroupNames.length > 25) {
+    console.log("resourceGroupNames accepts at most 25 resource groups.");
+    process.exit(1);
+}
+if (resourceGroupNames.some(name => name.length > 255)) {
+    console.log("resourceGroupNames entries cannot exceed 255 characters.");
+    process.exit(1);
 }
 
 let contentType;
@@ -121,7 +135,8 @@ const jsonBody = generateJson(
     sbomComponentVersion,
     namespace,
     sbomAutocorrection,
-    sbomLicenseCorrection
+    sbomLicenseCorrection,
+    resourceGroupNames
 );
 if (jsonBody == "") {
     console.log("Wrong config.")
