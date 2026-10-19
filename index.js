@@ -358,7 +358,7 @@ if (shouldFetchVulnerabilities) {
 
 if (sbomQuality) {
     if (sbomQuality > sbomQualityPct) {
-        console.log("Sbom Quality below acceptable parameter. Build failing.")
+        console.log("SBOM quality below acceptable parameter. Build failing.")
         process.exit(1)
     }
 }
