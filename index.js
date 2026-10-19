@@ -4,21 +4,68 @@ import {uploadFile} from "./service/file.upload.service.js";
 import {getDependencyVulnearabilities} from "./service/dependency.vulnerabilities.service.js";
 import {checkFile, fileCheckSumCalculate} from "./service/sha.service.js";
 import path from "path";
+import * as core from '@actions/core';
+import fs from "fs";
 
-const url = process.env.INPUT_URL.trim()
-const filePath = process.env.INPUT_FILEPATH.trim()
-const secretAccessKey = process.env.INPUT_SECRETACCESSKEY.trim()
-const accessKey = process.env.INPUT_ACCESSKEY.trim()
-const manufactureName = process.env.INPUT_MANUFACTURENAME.trim()
-const supplierName = process.env.INPUT_SUPPLIERNAME.trim()
-const subType = process.env.INPUT_SUBTYPE.trim()
-const threshold = process.env.INPUT_THRESHOLD.trim()
-const pkgType = process.env.INPUT_PKGTYPE.trim()
-const sbomComponentName = process.env.INPUT_SBOMCOMPONENTNAME.trim()
-const namespace = process.env.INPUT_NAMESPACE.trim()
-const sbomComponentVersion = process.env.INPUT_SBOMCOMPONENTVERSION.trim()
-const sbomQuality = process.env.INPUT_SBOMQUALITY.trim()
+let url = core.getInput('url');
+const filePath = core.getInput('filePath');
+const secretAccessKey = core.getInput('secretAccessKey');
+const accessKey = core.getInput('accessKey');
+const manufactureName = core.getInput('manufactureName');
+const supplierName = core.getInput('supplierName');
+const subType = core.getInput('subType');
+const threshold = core.getInput('threshold');
+const pkgType = core.getInput('pkgType');
+const sbomComponentName = core.getInput('sbomComponentName');
+const namespace = core.getInput('namespace');
+const sbomComponentVersion = core.getInput('sbomComponentVersion');
+const sbomQuality = core.getInput('sbomQuality');
+const inputsbomAutocorrection = core.getInput('sbomAutocorrection');
+const inputsbomLicenseCorrection = core.getInput('sbomLicenseCorrection');
+const analysisReportPath = core.getInput('analysisReportPath');
+// One name per line and/or comma-separated; trimmed, blanks and exact duplicates dropped
+const resourceGroupNames = [...new Set(core.getMultilineInput('resourceGroupNames')
+    .flatMap(line => line.split(','))
+    .map(name => name.trim())
+    .filter(name => name !== ''))];
+
 const noProxy = !process.env.NO_PROXY? process.env.no_proxy : process.env.NO_PROXY;
+
+let sbomAutocorrection;
+let sbomLicenseCorrection;
+
+const bools = ['true', 'false'];
+
+if (inputsbomAutocorrection) {
+    
+    if (bools.includes(inputsbomAutocorrection.toLowerCase())){
+    sbomAutocorrection = inputsbomAutocorrection.toLowerCase() == 'true'? true : false;
+    }
+    else {
+        console.log("sbomAutocorrection must have a value of either true or false");
+        process.exit(1); 
+    }
+}
+
+if (inputsbomLicenseCorrection) {
+    
+    if (bools.includes(inputsbomLicenseCorrection.toLowerCase())){
+    sbomLicenseCorrection = inputsbomLicenseCorrection.toLowerCase() == 'true'? true : false;
+    }
+    else {
+        console.log("sbomLicenseCorrection must have a value of either true or false");
+        process.exit(1);
+    }
+}
+
+if (resourceGroupNames.length > 25) {
+    console.log("resourceGroupNames accepts at most 25 resource groups.");
+    process.exit(1);
+}
+if (resourceGroupNames.some(name => name.length > 255)) {
+    console.log("resourceGroupNames entries cannot exceed 255 characters.");
+    process.exit(1);
+}
 
 let contentType;
 if (!url || !filePath || !secretAccessKey || !accessKey || !subType) {
@@ -34,6 +81,11 @@ if (!(optionalArgsPresent || optionalArgsAbsent)) {
         " and cannot be used individually.")
     process.exit(1)
 }
+
+if (url.endsWith('/')){
+    url = url.substring(0, url.length -1);
+}
+
 const regex = /^https:\/\/[^ "]+$/;
 if (!regex.test(url)) {
     console.log("Incorrect api url. Please adjust configuration.")
@@ -81,7 +133,10 @@ const jsonBody = generateJson(
     pkgType,
     sbomComponentName,
     sbomComponentVersion,
-    namespace
+    namespace,
+    sbomAutocorrection,
+    sbomLicenseCorrection,
+    resourceGroupNames
 );
 if (jsonBody == "") {
     console.log("Wrong config.")
@@ -147,7 +202,7 @@ while (runLoop) {
         console.log("File " + fileName + " has been imported.");
         importedAt = false;
     }
-    if (status == 8001 || status == 8002 || status == 8003 || status == 8004) {
+    if (status == 8001 || status == 8002 || status == 8003 || status == 8004 || status == 8005) {
         console.log(result?.data?.statusDesc);
         if (result?.data?.errorMsg != undefined) console.log(result.data.errorMsg);
 
@@ -157,8 +212,10 @@ while (runLoop) {
     if (status == 7110 && enrichmentStatus == 7010) {
         runLoop = false;
         importId = result?.data?.id;
-        sbomQualityPct = result?.data?.sbomQualitySummary?.gradePct;
-        sbomQualityGrade = result?.data?.sbomQualitySummary?.gradeLetter;
+        
+        sbomQualityGrade = result?.data?.sbomQualitySummaryV2?.gradeLetter ? result?.data?.sbomQualitySummaryV2?.gradeLetter : result?.data?.sbomQualitySummary?.gradeLetter;
+        sbomQualityPct = result?.data?.sbomQualitySummaryV2?.gradePct ? Math.round(result?.data?.sbomQualitySummaryV2?.gradePct) : result?.data?.sbomQualitySummary?.gradePct
+
     }
     await new Promise((r) => setTimeout(r, 15000));
 }
@@ -175,7 +232,13 @@ console.log(
 );
 
 let failBuild = false;
-if (threshold != undefined && threshold != '') {
+const hasThreshold = threshold != undefined && threshold != '';
+const reportPath =
+    analysisReportPath && analysisReportPath.trim() !== ''
+        ? analysisReportPath.trim()
+        : undefined;
+const shouldFetchVulnerabilities = hasThreshold || reportPath;
+if (shouldFetchVulnerabilities) {
     let result = await getDependencyVulnearabilities(
         importId,
         secretAccessKey,
@@ -189,65 +252,111 @@ if (threshold != undefined && threshold != '') {
             accessKey,
             url, proxyRunning
         );
-        console.log(result)
+        console.log(result);
         await new Promise((r) => setTimeout(r, 15000));
     }
-    const lowVulns = result?.entities[0]?.depsVulnStats?.l;
-    const mediumVulns = result?.entities[0]?.depsVulnStats?.m;
-    const highVulns = result?.entities[0]?.depsVulnStats?.h;
-    const criticalVulns = result?.entities[0]?.depsVulnStats?.c;
-    switch (threshold) {
-        case "Low":
-            if (
-                lowVulns != undefined ||
-                mediumVulns != undefined ||
-                highVulns != undefined ||
-                criticalVulns != undefined
-            ) {
-                failBuild = true;
+    const entity = result?.entities ? result.entities[0] : undefined;
+    const lowVulns = entity?.depsVulnStats?.l;
+    const mediumVulns = entity?.depsVulnStats?.m;
+    const highVulns = entity?.depsVulnStats?.h;
+    const criticalVulns = entity?.depsVulnStats?.c;
+    const reportContent = {
+        importId,
+        sbomQuality: {
+            grade: sbomQualityGrade,
+            percent: sbomQualityPct
+        },
+        vulnerabilityStats: {
+            low: lowVulns ?? 0,
+            medium: mediumVulns ?? 0,
+            high: highVulns ?? 0,
+            critical: criticalVulns ?? 0
+        },
+        vulnerabilities: entity?.depsVulns ?? []
+    };
+    core.setOutput('report', JSON.stringify(reportContent));
+    if (reportPath) {
+        const resolvedReportPath = path.resolve(reportPath);
+        const workspace = process.env.GITHUB_WORKSPACE
+            ? path.resolve(process.env.GITHUB_WORKSPACE)
+            : undefined;
+        if (
+            workspace &&
+            resolvedReportPath !== workspace &&
+            !resolvedReportPath.startsWith(workspace + path.sep)
+        ) {
+            core.setFailed(
+                "analysisReportPath '" + reportPath + "' resolves outside GITHUB_WORKSPACE. Refusing to write."
+            );
+            process.exit(1);
+        }
+        try {
+            const directory = path.dirname(resolvedReportPath);
+            if (directory && directory !== '.') {
+                fs.mkdirSync(directory, {recursive: true});
             }
-            break;
-        case "Medium":
-            if (
-                mediumVulns != undefined ||
-                highVulns != undefined ||
-                criticalVulns != undefined
-            ) {
-                failBuild = true;
-            }
-            break;
-        case "High":
-            if (highVulns != undefined || criticalVulns != undefined) {
-                failBuild = true;
-            }
-            break;
-        case "Critical":
-            if (criticalVulns != undefined) {
-                failBuild = true;
-            }
-            break;
-    }
-    if (criticalVulns != undefined)
-        console.log("Critical Vulnerabilities found " + criticalVulns);
-    if (highVulns != undefined)
-        console.log("High Vulnerabilities found " + highVulns);
-    if (mediumVulns != undefined)
-        console.log("Medium Vulnerabilities found " + mediumVulns);
-    if (lowVulns != undefined)
-        console.log("Low Vulnerabilities found " + lowVulns);
-    if (result?.entities[0]?.depsVulns) {
-        for (let i = 0; i < result.entities[0].depsVulns.length; i++) {
-            console.log("--------------");
-            console.log(result?.entities[0]?.depsVulns[i]?.id);
-            console.log(result?.entities[0]?.depsVulns[i]?.summary);
+            fs.writeFileSync(resolvedReportPath, JSON.stringify(reportContent, null, 2));
+            console.log("SBOM analysis report written to " + resolvedReportPath);
+        } catch (error) {
+            core.setFailed("Failed to write SBOM analysis report: " + error.message);
+            process.exit(1);
         }
     }
-    if (failBuild) {
-        console.log("Vulnerabilities found above the set threshold. Build failing.")
-        process.exit(1);
+    if (hasThreshold) {
+        switch (threshold) {
+            case "Low":
+                if (
+                    lowVulns != undefined ||
+                    mediumVulns != undefined ||
+                    highVulns != undefined ||
+                    criticalVulns != undefined
+                ) {
+                    failBuild = true;
+                }
+                break;
+            case "Medium":
+                if (
+                    mediumVulns != undefined ||
+                    highVulns != undefined ||
+                    criticalVulns != undefined
+                ) {
+                    failBuild = true;
+                }
+                break;
+            case "High":
+                if (highVulns != undefined || criticalVulns != undefined) {
+                    failBuild = true;
+                }
+                break;
+            case "Critical":
+                if (criticalVulns != undefined) {
+                    failBuild = true;
+                }
+                break;
+        }
+        if (criticalVulns != undefined)
+            console.log("Critical Vulnerabilities found " + criticalVulns);
+        if (highVulns != undefined)
+            console.log("High Vulnerabilities found " + highVulns);
+        if (mediumVulns != undefined)
+            console.log("Medium Vulnerabilities found " + mediumVulns);
+        if (lowVulns != undefined)
+            console.log("Low Vulnerabilities found " + lowVulns);
+        if (entity?.depsVulns) {
+            for (let i = 0; i < entity.depsVulns.length; i++) {
+                console.log("--------------");
+                console.log(entity?.depsVulns[i]?.id);
+                console.log(entity?.depsVulns[i]?.summary);
+            }
+        }
+        if (failBuild) {
+            console.log("Vulnerabilities found above the set threshold. Build failing.");
+            process.exit(1);
+        }
     }
 }
-if (sbomQuality != undefined) {
+
+if (sbomQuality) {
     if (sbomQuality > sbomQualityPct) {
         console.log("SBOM quality below acceptable parameter. Build failing.")
         process.exit(1)

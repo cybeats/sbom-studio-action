@@ -44,11 +44,23 @@ inputs:
   sbomComponentVersion:
     required: false
     description: 'SBOM Component Version'
+  sbomAutocorrection:
+    required: false
+    description: 'SBOM Autocorrection'
+  sbomLicenseCorrection:
+    required: false
+    description: 'SBOM License Correction'
+  analysisReportPath:
+    required: false
+    description: 'File path to store the SBOM analysis report as JSON'
+  resourceGroupNames:
+    required: false
+    description: 'Resource group names to assign the SBOM to (one per line and/or comma-separated)'
 outputs:
   report:
-    description: 'Displays found vulnerabilities and their information'
+    description: 'JSON representation of the SBOM analysis summary and vulnerabilities'
   
 
 runs:
   main: 'dist/index.js'
-  using: 'node16'
+  using: 'node24'

@@ -8,7 +8,10 @@ export function generateJson(
     pkgType,
     sbomComponenentName,
     sbomComponentVersion,
-    namespace
+    namespace,
+    sbomAutocorrection,
+    sbomLicenseCorrection,
+    resourceGroupNames
 ) {
     let jsonBody = {
         type: "catalog",
@@ -36,6 +39,9 @@ export function generateJson(
         jsonBody["manufactureName"] = manufactureName;
     if (isDefined(supplierName)) jsonBody["supplierName"] = supplierName;
     if (component !== undefined) jsonBody["sbomComponent"] = component;
+    if ((sbomAutocorrection != undefined) && (typeof sbomAutocorrection == 'boolean')) jsonBody["autocorrection"] = sbomAutocorrection;
+    if ((sbomLicenseCorrection != undefined) && (typeof sbomLicenseCorrection == 'boolean')) jsonBody["licenseAutocorrection"] = sbomLicenseCorrection;
+    if (resourceGroupNames && resourceGroupNames.length > 0) jsonBody["resourceGroupNames"] = resourceGroupNames;
 
     return jsonBody;
 };

@@ -104,3 +104,9 @@ typings/
 .tern-port
 
 .idea/
+
+
+load.sh
+
+.vscode/
+bom.cdx.json

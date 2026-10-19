@@ -33,7 +33,7 @@ jobs:
       API_URL: 'https://api.us.services.cybeats.com'
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       ############################################################################################
       # The required input parameters are the following
@@ -86,7 +86,7 @@ jobs:
       # namespace             namespace of the artifact (required by maven artifacts)
       #
       ############################################################################################
-      
+    
       # pypi application
       # pkgType: pypi
       # sbomComponentName: my-example-pypi-application
@@ -99,7 +99,7 @@ jobs:
           filePath:   examples/application/cyclonedx-sbom-of-my-pypi-application.json
           secretAccessKey:   ${{ secrets.SECRETKEY }}  
           accessKey:   ${{ secrets.ACCESSKEY }}  
-          subType:   application     
+          subType:   application   
           pkgType: pypi
           sbomComponentName: my-example-pypi-application
           sbomComponentVersion: 2.1.${{ github.run_number }}
@@ -113,11 +113,11 @@ jobs:
           filePath:   examples/application/cyclonedx-sbom-of-my-example-maven-application.json
           secretAccessKey:   ${{ secrets.SECRETKEY }}  
           accessKey:   ${{ secrets.ACCESSKEY }}  
-          subType:   application     
+          subType:   application   
           pkgType: maven
           sbomComponentName: my-example-maven-application
           sbomComponentVersion: 1.0.0
-          namespace: 'com.mycompany'       
+          namespace: 'com.mycompany'     
 
       ############################################################################################
       # The imported SBOM's manufacturer and supplier will default to the organization 
@@ -138,7 +138,7 @@ jobs:
       # If not they can be created in SBOM Studio before used.
       #
       # manufactureName: my-example-manufacture-organization 
-      # supplierName: my-example-supplier-organization       
+      # supplierName: my-example-supplier-organization     
       - name: Import an SDPX SBOM of an application 
         uses: cybeats/sbom-studio-action@v1
         with:
@@ -173,7 +173,7 @@ jobs:
           secretAccessKey:   ${{ secrets.SECRETKEY }}  
           accessKey:   ${{ secrets.ACCESSKEY }}  
           subType:   application 
-          sbomQuality:   90                
+          sbomQuality:   90              
 
       # threshold of value High will cause build to fail.
       # only Low and Medium vulnerabilities allowed in this case.
@@ -200,6 +200,10 @@ jobs:
       # Optional parameters to stop build 
       # - sbomQuality, threshold
       #
+      # Optional parameters for reporting
+      # - analysisReportPath   desired file path for a JSON SBOM analysis report
+      #                        this also collects vulnerabilities when no threshold is provided
+      #
       # All the input parameters are supplied the following example.
       #
       ############################################################################################
@@ -216,9 +220,42 @@ jobs:
           pkgType:   maven   
           sbomComponentName: appbomination 
           sbomComponentVersion:     8.8.5
-          namespace: example9      
+          namespace: example9    
           manufactureName: my-example-manufacture-organization  
-          supplierName: my-example-supplier-organization       
+          supplierName: my-example-supplier-organization  
+      
+      ############################################################################################  
+      # SBOM and license autocorrection can be toggled by setting the optional parameters 
+      # sbomAutocorrection and sbomLicenseCorrection
+      # These parameters are boolean, and must be either true or false
+      ############################################################################################ 
+      - name: Import an SPDX SBOM with autocorrection and license autocorrection set to "true"
+        uses: cybeats/sbom-studio-action@v1
+        with:
+          url:   ${{ env.API_URL }}  
+          filePath:  ./spdx-example-application.spdx  
+          secretAccessKey:   ${{ secrets.SECRETKEY }}  
+          accessKey:   ${{ secrets.ACCESSKEY }}  
+          subType:   application 
+          sbomAutocorrection: true
+          sbomLicenseCorrection: true
+
+      ############################################################################################
+      # The imported SBOM can be assigned to resource groups by name with the optional
+      # parameter resourceGroupNames, one name per line and/or comma-separated (case-sensitive,
+      # max 25), e.g. resourceGroupNames: my-example-resource-group,my-other-example-resource-group
+      ############################################################################################
+      - name: Import an SBOM and assign it to resource groups
+        uses: cybeats/sbom-studio-action@v1
+        with:
+          url:   ${{ env.API_URL }}
+          filePath:  ./spdx-example-application.spdx
+          secretAccessKey:   ${{ secrets.SECRETKEY }}
+          accessKey:   ${{ secrets.ACCESSKEY }}
+          subType:   application
+          resourceGroupNames: |
+            my-example-resource-group
+            my-other-example-resource-group
 ```
 
 #### Required Fields
@@ -239,10 +276,18 @@ jobs:
     sbomComponentName
     namespace
     sbomComponentVersion
+    sbomAutocorrection
+    sbomLicenseCorrection
+    analysisReportPath
+    resourceGroupNames
+
+#### Persisting the Analysis Report
+
+Set `analysisReportPath` to record the SBOM analysis data as a JSON file. The action will create parent directories when needed and still fetch vulnerability details even if no `threshold` is provided. The same summary payload is also exposed through the `report` action output.
 
 #### NOTE
 
-    The 4 input parameters (pkgType, sbomComponentName, sbomComponentVersion and optionally namespace) are optional but they go in pack together. They cannot be provided individually. 
+    The 4 input parameters (pkgType, sbomComponentName, sbomComponentVersion and optionally namespace) are optional but they go in pack together. They cannot be provided individually.
 
     Required Fields need to be present when running the workflow every time otherwise build will stop and fail.
 
